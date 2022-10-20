@@ -11,7 +11,7 @@ project(watch_up_project)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-option(BUILD_TESTS "Build tests" OFF)
+option(BUILD_TESTS "Build tests" ON)
 option(BUILD_DOCS "Build documentation" OFF)
 option(BUILD_COVERAGE "Build code coverage" OFF)
 
@@ -22,5 +22,21 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow -Wnon-virtual-dtor")
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
 
+if (BUILD_TESTS)
+    enable_testing()
+endif()
+
+if (BUILD_COVERAGE)
+    set(ENABLE_COVERAGE ON CACHE BOOL "Enable coverage build." FORCE)
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/externals/CMake-codecov/cmake")
+    find_package(codecov)
+    string(APPEND CMAKE_CXX_FLAGS " --coverage")
+endif()
+
 add_subdirectory(server)
 add_subdirectory(client)
+
+if (BUILD_COVERAGE)
+    coverage_evaluate()
+endif()
+

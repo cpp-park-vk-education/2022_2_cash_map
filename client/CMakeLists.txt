@@ -14,4 +14,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC include)
 
 target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_lib)
 
-add_subdirectory(tests)
+if (BUILD_TESTS)
+    add_subdirectory(tests)
+endif()
+
+if (BUILD_COVERAGE)
+    add_coverage(${PROJECT_NAME})
+    add_coverage(${PROJECT_NAME}_lib)
+endif()
