@@ -1,0 +1,26 @@
+on: push
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    container: ilyaaid/gcc_cmake_gtest_linters
+    steps:
+      - uses: actions/checkout@v2
+      - run: make check
+
+  build:
+    runs-on: ubuntu-latest
+    container: ilyaaid/gcc_cmake_gtest_linters
+    needs: [check]
+    steps:
+      - uses: actions/checkout@v2
+      - run: make build
+
+  test:
+    runs-on: ubuntu-latest
+    container: ilyaaid/gcc_cmake_gtest_linters
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v2
+        working-directory: ${{github.workspace}}/build
+      - run: make test

@@ -23,6 +23,7 @@ hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
 
 if (BUILD_TESTS)
+    include(GoogleTest)
     enable_testing()
 endif()
 
