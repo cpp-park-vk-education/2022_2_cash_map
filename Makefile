@@ -6,10 +6,10 @@ clean:
 	rm -rf build
 
 check:
-	cd scripts && ./run_linters.sh
+	cd scripts && chmod +x run_linters.sh && ./run_linters.sh
 
 build:
-	cd scripts && ./build.sh
+	cd scripts && chmod +x build.sh && ./build.sh
 
 test:
-	cd scripts && ./run_tests.sh
+	cd scripts && chmod +x run_tests.sh && ./run_tests.sh
