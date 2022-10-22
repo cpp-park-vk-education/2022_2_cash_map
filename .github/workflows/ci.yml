@@ -22,5 +22,5 @@ jobs:
     needs: [build]
     steps:
       - uses: actions/checkout@v2
-        working-directory: ${{github.workspace}}/build
+      - working-directory: ${{github.workspace}}/build
       - run: make test
