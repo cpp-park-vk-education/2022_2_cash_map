@@ -11,5 +11,5 @@ check:
 build:
 	cd scripts && chmod +x build.sh && ./build.sh
 
-test:
+test: build
 	cd scripts && chmod +x run_tests.sh && ./run_tests.sh
