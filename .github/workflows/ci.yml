@@ -3,14 +3,14 @@ on: push
 jobs:
   check:
     runs-on: ubuntu-latest
-    container: ilyaaid/gcc_cmake_gtest_linters
+    container: ilyaaid/watch_up
     steps:
       - uses: actions/checkout@v3
       - run: make check
 
   build:
     runs-on: ubuntu-latest
-    container: ilyaaid/gcc_cmake_gtest_linters
+    container: ilyaaid/watch_up
     needs: [check]
     steps:
       - uses: actions/checkout@v3
@@ -18,7 +18,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    container: ilyaaid/gcc_cmake_gtest_linters
+    container: ilyaaid/watch_up
     needs: [build]
     steps:
       - uses: actions/checkout@v3

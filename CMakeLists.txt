@@ -19,7 +19,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wpedantic -Werror -Wall -Wextra")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-command-line-argument")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow -Wnon-virtual-dtor")
 
-hunter_add_package(GTest)
+#hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
 
 if (BUILD_TESTS)
