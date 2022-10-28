@@ -33,8 +33,13 @@ endif()
 if (BUILD_COVERAGE)
     set(ENABLE_COVERAGE ON CACHE BOOL "Enable coverage build." FORCE)
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/externals/CMake-codecov/cmake")
+    find_package(codecov)
     string(APPEND CMAKE_CXX_FLAGS " --coverage")
 endif()
 
 add_subdirectory(server)
 add_subdirectory(client)
+
+if (BUILD_COVERAGE)
+    coverage_evaluate()
+endif()
