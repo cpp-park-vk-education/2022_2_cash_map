@@ -1,6 +1,6 @@
-.PHONY: all build rebuild check test testextra memtest memtestextra clean
+.PHONY: all build rebuild check test testextra memtest memtestextra clean coverage
 
-all: clean check build test
+all: clean check build test coverage
 
 clean:
 	rm -rf build
@@ -13,3 +13,6 @@ build:
 
 test: build
 	cd scripts && chmod +x run_tests.sh && ./run_tests.sh
+
+coverage:
+	cd scripts && chmod +x coverage.sh && ./coverage.sh

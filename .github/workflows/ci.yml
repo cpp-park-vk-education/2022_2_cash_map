@@ -23,3 +23,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: make test
+
+  coverage:
+    runs-on: ubuntu-latest
+    container: ilyaaid/watch_up
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v3 { echo -n '<added text> '; cat file; }
+      - run: make coverage
+      - run: gcovr -r . -s | sed '/tests/d' | sed '/server/d' > client/README.txt
+      - run: gcovr -r . -s | sed '/tests/d' | sed '/client/d' > server/README.txt
+      - run: git add *README.txt
+      - run: git commit --allow-empty --author="github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+      - run: git push

@@ -19,7 +19,10 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wpedantic -Werror -Wall -Wextra")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-command-line-argument")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow -Wnon-virtual-dtor")
 
-#hunter_add_package(GTest)
+find_package(GTest CONFIG)
+if (NOT GTest_FOUND)
+    hunter_add_package(GTest)
+endif()
 find_package(GTest CONFIG REQUIRED)
 
 if (BUILD_TESTS)
@@ -30,14 +33,8 @@ endif()
 if (BUILD_COVERAGE)
     set(ENABLE_COVERAGE ON CACHE BOOL "Enable coverage build." FORCE)
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/externals/CMake-codecov/cmake")
-    find_package(codecov)
     string(APPEND CMAKE_CXX_FLAGS " --coverage")
 endif()
 
 add_subdirectory(server)
 add_subdirectory(client)
-
-if (BUILD_COVERAGE)
-    coverage_evaluate()
-endif()
-
