@@ -30,7 +30,7 @@ jobs:
       - run: make coverage
       - run: gcovr -r . -s | sed '/tests/d' | sed '/server/d' > client/README.txt
       - run: gcovr -r . -s | sed '/tests/d' | sed '/client/d' > server/README.txt
-      - run: git config --global --add safe.directory /__w/test/test
+      - run: git config --global --add safe.directory /__w/2022_2_cash_map/2022_2_cash_map
       - run: git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - run: git config --global user.name "github-actions[bot]"
       - run: git add client/README.txt server/README.txt
