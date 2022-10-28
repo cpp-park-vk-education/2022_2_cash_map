@@ -37,8 +37,7 @@ jobs:
       - run: git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - run: git config --global user.name "github-actions[bot]"
       - run: git add client/README.txt server/README.txt
-      - run: git commit -m "auto commit coverage report"
-      - run: git push
+      - run: git commit -m "auto commit coverage report" && git push || echo "coverage not changed."
       - uses: actions/upload-artifact@v3
         with:
           name: coverage-report
