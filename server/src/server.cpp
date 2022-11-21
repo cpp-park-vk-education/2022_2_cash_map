@@ -1,10 +1,10 @@
+#include "server.h"
+
 #include <iostream>
 
-#include "lib.hpp"
+Server::Server(): started(false), opts_({"127.0.0.1", 8080})
+{}
 
-int main(){
-
-    std::cout << "Server exe" << "\n";
-    std::cout << foo() << "\n";
-    return 0;
+void Server::run() {
+    std::cout << "Server run" << std::endl;
 }
