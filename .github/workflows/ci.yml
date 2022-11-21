@@ -27,8 +27,6 @@ jobs:
     container: ilyaaid/watch_up
     steps:
       - uses: actions/checkout@v3
-      - run: apt -y update
-      - run: apt -y install lcov
       - run: git config --global --add safe.directory /__w/2022_2_cash_map/2022_2_cash_map
       - run: git submodule update --init
       - run: make coverage
