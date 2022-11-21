@@ -1,9 +1,8 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#include "lib.hpp"
+#include "room.h"
 
 TEST(Lib_test, test_foo) {
-    std::string a = "foo";
-    EXPECT_EQ(a, foo());
+    EXPECT_EQ(1,1);
 }
