@@ -1,18 +1,55 @@
-project(client)
+cmake_minimum_required(VERSION 3.5)
 
-file(GLOB SOURCES "src/*.cpp")
+project(WatchUpApp VERSION 0.1 LANGUAGES CXX)
 
-list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/client.cpp")
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_library(${PROJECT_NAME}_lib STATIC ${SOURCES})
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
-target_include_directories(${PROJECT_NAME}_lib PUBLIC include)
 
-add_executable(${PROJECT_NAME} ./src/client.cpp)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+#set(CMAKE_PREFIX_PATH "C:\\Qt\\6.2.4\\msvc2019_64")
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+
+set(CMAKE_AUTOUIC_SEARCH_PATHS static/ui)
+
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE HEADERS "include/*.h")
+
+add_library(${PROJECT_NAME}_lib STATIC ${HEADERS} ${SOURCES} ${UI})
+
+add_executable(${PROJECT_NAME}
+    "main.cpp"
+)
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
-target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE WatchUpApp_lib)
+
+
+target_link_libraries(${PROJECT_NAME}_lib PUBLIC Qt${QT_VERSION_MAJOR}::Widgets)
+
+set_target_properties(WatchUpApp PROPERTIES
+    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+    MACOSX_BUNDLE TRUE
+    WIN32_EXECUTABLE TRUE
+)
+
+install(TARGETS WatchUpApp
+    BUNDLE DESTINATION .
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+if(QT_VERSION_MAJOR EQUAL 6)
+    qt_finalize_executable(WatchUpApp)
+endif()
+
 
 if (BUILD_TESTS)
     add_subdirectory(tests)
