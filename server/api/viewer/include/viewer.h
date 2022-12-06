@@ -9,9 +9,7 @@
 #include <boost/asio.hpp>
 #include <boost/uuid/uuid.hpp>
 
-
 #include "room.h"
-
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>

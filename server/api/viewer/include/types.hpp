@@ -1,6 +1,8 @@
 #ifndef WATCH_UP_PROJECT_TYPES_HPP
 #define WATCH_UP_PROJECT_TYPES_HPP
 
+#include "nlohmann/json.hpp"
+
 enum type {
     invalid = -1,
     create = 0,

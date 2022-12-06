@@ -7,10 +7,6 @@
 #include <boost/asio.hpp>
 
 #include "shared_state.h"
-#include "serializer.h"
-#include "viewer.h"
-#include "room.h"
-
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>

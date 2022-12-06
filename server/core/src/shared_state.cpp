@@ -1,6 +1,6 @@
 #include "shared_state.h"
-#include "viewer.h"
 
+#include <iostream>
 
 shared_state::shared_state(net::io_context &ioc):
         ioc_(ioc)
