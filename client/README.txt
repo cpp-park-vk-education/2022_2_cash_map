@@ -7,7 +7,7 @@ File                                       Lines    Exec  Cover   Missing
 client/src/client.cpp                          5       0     0%   5-9
 client/src/lib.cpp                             2       2   100%   
 ------------------------------------------------------------------------------
-TOTAL                                         21      12    57%
+TOTAL                                         21       9    42%
 ------------------------------------------------------------------------------
-lines: 57.1% (12 out of 21)
-branches: 23.8% (10 out of 42)
+lines: 42.9% (9 out of 21)
+branches: 18.4% (7 out of 38)
