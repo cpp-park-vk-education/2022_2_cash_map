@@ -7,16 +7,18 @@
 
 #include "shared_state.h"
 
-class Listener: public std::enable_shared_from_this<Listener>{
+typedef std::shared_ptr<shared_state> state_ptr;
+
+class listener: public std::enable_shared_from_this<listener>{
 public:
-    Listener(boost::asio::io_context& ioc, boost::asio::ip::tcp::endpoint endpoint);
-    ~Listener();
+    listener(boost::asio::io_context& ioc, boost::asio::ip::tcp::endpoint&& endpoint);
+    ~listener();
 
     void async_accept();
-    void on_accept();
+    void on_accept(boost::system::error_code& ec);
 
 private:
-    Shared_state state_;
+    state_ptr state_;
     boost::asio::io_context& ioc_;
     boost::asio::ip::tcp::acceptor acceptor_;
     boost::asio::ip::tcp::socket socket_;
