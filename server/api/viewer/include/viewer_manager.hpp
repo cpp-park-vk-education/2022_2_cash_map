@@ -2,8 +2,10 @@
 #define WATCH_UP_PROJECT_VIEWER_MANAGER_HPP
 
 #include <string>
-#include <boost/beast.hpp>
 #include <utility>
+#include <unordered_map>
+
+#include <boost/beast.hpp>
 
 #include "types.hpp"
 #include "serializer.h"
@@ -22,7 +24,7 @@ public:
     viewer_manager(std::string&& ws_req, stream_ptr&& ws, state_ptr state):
         ws_(std::move(ws)),
         state_(std::move(state)),
-        ws_req_(std::move(ws_req))
+        str_req_(std::move(ws_req))
     {}
 
     void do_close(){
@@ -31,34 +33,39 @@ public:
     }
 
     void define_type(){
-        type_ = serializer::get_type(ws_req_);
+        auto it = types.find(req_["type"]);
+        type_ = it->second;
     }
 
     void handle_request(){
-        define_type();
-        // TODO wrap whole block in try-catch
-        if(type_ == create){
-            auto host = viewer_creator::create_host(std::move(ws_));
+        try {
+            req_ = serializer::deserialize(str_req_);
+            define_type();
+            if (type_ == create) {
+                auto host = viewer_creator::create_host(std::move(ws_));
+                auto room = room_creator::create_room(std::weak_ptr(host), state_);
+                state_->add_room(room->get_id(), std::weak_ptr(room));
+                room->start();
+                host->set_room(room);
+                host->start();
 
-            auto room = room_creator::create_room(std::weak_ptr(host), state_);
-            state_->add_room(room->get_id(), std::weak_ptr(room));
-            room->start();
-            host->set_room(room);
-            host->start();
-
-        } else if(type_ == join){
-            auto room_id = serializer::get_room_id(ws_req_);
-            auto room = state_->get_room(room_id);
-            if(!room.lock()){
-                // TODO send not found
+            } else if (type_ == join) {
+                auto room_id = boost::lexical_cast<uuid>(req_["room_id"]);
+                auto room = state_->get_room(room_id);
+                if (!room.lock()) {
+                    // TODO send not found
+                    return;
+                }
+                viewer_creator::create_viewer(std::move(ws_), room.lock())->start();
+            } else if (type_ == invalid) {
+                // TODO send bad request
                 return;
+            } else {
+                // TODO send method not allowed
             }
-            viewer_creator::create_viewer(std::move(ws_), room.lock())->start();
-        } else if(type_ == invalid){
-            // TODO send bad request
-            return;
-        } else {
-           // TODO send method not allowed
+        }
+        catch (...){
+
         }
     }
 private:
@@ -66,7 +73,9 @@ private:
     state_ptr state_;
 
     type type_ = invalid;
-    std::string ws_req_;
+
+    std::string str_req_;
+    std::unordered_map<std::string, std::string> req_;
 
 };
 

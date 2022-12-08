@@ -2,6 +2,7 @@
 
 #include <utility>
 
+#include "handler.h"
 
 Viewer::Viewer(stream_ptr &&ws, uuid&& id, room_ptr&& room):
         id_(std::forward<uuid>(id)),
@@ -39,18 +40,18 @@ void Viewer::send_chat_msg(std::string) {
 
 
 void Viewer::do_read() {
-
     ws_->async_read(buffer_,
-                    [self{shared_from_this()}](error_code ec, std::size_t){
-                        if(ec){
-                            std::cout << "[viewer async read] " << ec.message() <<  std::endl;
-                            return;
-                        }
-                        auto in = beast::buffers_to_string(self->buffer_.cdata());
-                        std::cout << "[viewer handle] " <<  in << std::endl;
-                        self->do_read();
-                    });
-
+    [self{shared_from_this()}](error_code ec, std::size_t bytes_read){
+        if(ec){
+            std::cout << "[viewer async read] " << ec.message() <<  std::endl;
+            return;
+        }
+        auto in = beast::buffers_to_string(self->buffer_.cdata());
+        self->buffer_.consume(bytes_read);
+        std::cout << "[viewer handle] " <<  in << std::endl;
+        self->do_read();
+        std::make_unique<handler>(std::move(in), self->shared_from_this(), self->room_)->handle_request();
+    });
 }
 
 
@@ -60,11 +61,11 @@ uuid Viewer::get_id() const {
 
 
 std::string Viewer::get_nickname() const {
-    return std::string();
+    return nickname_;
 }
 
-void Viewer::set_nickname(std::string) {
-
+void Viewer::set_nickname(std::string nickname) {
+    nickname_ = nickname;
 }
 
 void Viewer::set_room(const room_ptr &room) {
@@ -72,7 +73,23 @@ void Viewer::set_room(const room_ptr &room) {
 }
 
 
-void Viewer::set_access_opts(access_options) {
+void Viewer::set_access_opts(const access_options& opts) {
+    a_opts_ = opts;
+}
+
+void Viewer::set_timestamp() {
+
+}
+
+access_options Viewer::get_a_opts() const {
+    return a_opts_;
+}
+
+void Viewer::do_close() {
+    ws_->close("");
+}
+
+void Viewer::send_response(const std::string &) {
 
 }
 

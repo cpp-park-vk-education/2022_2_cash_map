@@ -2,6 +2,7 @@
 #define WATCH_UP_PROJECT_SERIALIZER_H
 
 #include <string>
+#include <unordered_map>
 
 #include "nlohmann/json.hpp"
 #include <boost/uuid/uuid_io.hpp>
@@ -14,19 +15,30 @@ using uuid = boost::uuids::uuid;
 
 class serializer {
 public:
+
     static nlohmann::json parse(const std::string& json_str){
         return nlohmann::json::parse(json_str);
     }
 
-    static type get_type(const std::string& json_str){
-        auto json = parse(json_str);
-        return json["type"].get<type>();
+    static std::unordered_map<std::string, std::string> deserialize(const std::string& json_str){
+        //TODO try-catch
+        nlohmann::json json =  nlohmann::json::parse(json_str);
+        std::unordered_map<std::string, std::string> data{};
+
+        for(const auto& item: json.items()){
+            data[item.key()] = item.value();
+        }
+        return data;
     }
 
-    static uuid get_room_id(const std::string& json_str){
-        auto json = parse(json_str);
-        return boost::lexical_cast<uuid>
-                (std::string(json["room_id"]));
+    static std::unordered_map<std::string, bool> deserialize_access_opts(const std::string& json_str){
+        nlohmann::json json =  nlohmann::json::parse(json_str);
+        std::unordered_map<std::string, bool> data{};
+
+        for(const auto& item: json.items()){
+            data[item.key()] = boost::lexical_cast<uuid>(item.value());
+        }
+        return data;
     }
 };
 
