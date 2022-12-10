@@ -7,10 +7,13 @@
 
 #include "viewer.h"
 #include "shared_state.h"
+#include "serializer.h"
+#include "response_creator.hpp"
 
-Room::Room(w_host_ptr host, uuid id, state_ptr state):
-        id_(id),
-        host_(std::move(host)),
+Room::Room(uuid&& host, uuid&& id, state_ptr state):
+        playing(false),
+        id_(std::forward<uuid>(id)),
+        host_(std::forward<uuid>(host)),
         state_(std::move(state)),
         check_timer_(state_->get_io_context(), boost::posix_time::seconds(5))
 {
@@ -19,15 +22,34 @@ Room::Room(w_host_ptr host, uuid id, state_ptr state):
 
 void Room::start() {
     std::cout << "[room start]\n";
-
 }
 
 void Room::join(w_viewer_ptr viewer) {
+    if(!viewers_.empty()) {
+        auto welcome_msg = serializer::serialize_viewers(type::join, viewers_);
+        viewer.lock()->send_message(welcome_msg);
+
+        auto incomer_msg = serializer::serialize_viewers(type::join, {std::make_pair(viewer.lock()->get_id(), viewer.lock()->get_nickname())});
+        for (const auto &p: participants_) {
+            p.second.lock()->send_message(incomer_msg);
+        }
+    } else {
+        auto res = response_creator::create_with_room(200, "created", id_);
+        viewer.lock()->send_message(serializer::serialize_response(create, res));
+    }
     participants_.insert(std::make_pair(viewer.lock()->get_id(), viewer));
+    viewers_.emplace_back(viewer.lock()->get_id(), viewer.lock()->get_nickname());
 }
 
-void Room::leave(uuid id) {
+void Room::leave(const uuid& id, const std::string& nick) {
+    auto viewer_dto = std::make_pair(id, nick);
+    auto it = find(viewers_.begin(), viewers_.end(), viewer_dto);
     participants_.erase(id);
+    viewers_.erase(it);
+    auto leave_msg = serializer::serialize_viewers(type::leave, {viewer_dto});
+    for(const auto& p : participants_){
+        p.second.lock()->send_message(leave_msg);
+    }
 }
 
 void Room::check_timings() {
@@ -40,6 +62,9 @@ void Room::check_timings() {
         return;
     }
     std::cout << "[check timings]\n";
+    for(const auto& viewer : participants_){
+        viewer.second.lock()->send_message("ping");
+    }
     start_timer();
 }
 
@@ -49,7 +74,7 @@ void Room::pause() {
     }
     playing = false;
     for(const auto& p : participants_){
-        p.second.lock()->pause();
+        p.second.lock()->send_message("");;
     }
 }
 
@@ -59,20 +84,22 @@ void Room::play() {
     }
     playing = true;
     for(const auto& p : participants_){
-        p.second.lock()->play();
+        p.second.lock()->send_message("");
     }
     start_timer();
 }
 
-void Room::synchronize() {
+void Room::synchronize(const boost::posix_time::time_duration & timing) {
+    auto msg = serializer::serialize_response(s_time,
+                                              response_creator::create_with_timing(timing));
     for(const auto& p : participants_){
-        p.second.lock()->set_timestamp();
+        p.second.lock()->send_message("");
     }
 }
 
 void Room::send_chat_msg(uuid /*viewer*/, const std::string &/*msg*/) {
     for(const auto& p : participants_){
-        p.second.lock()->send_chat_msg("");
+        p.second.lock()->send_message("");
     }
 }
 
@@ -100,12 +127,19 @@ void Room::stop_timer() {
     check_timer_.cancel();
 }
 
-void Room::set_resource(const std::string &) {
-
+void Room::set_resource(const std::string & src) {
+    src_ = src;
 }
 
 w_viewer_ptr Room::get_viewer(const uuid& v_id) {
     return participants_[v_id];
+}
+
+void Room::set_nickname(const uuid &viewer, std::string &&nick) {
+    auto msg = serializer::serialize_viewers(s_nick, {std::make_pair(viewer, std::move(nick))});
+    for(const auto& v: participants_){
+        v.second.lock()->send_message(msg);
+    }
 }
 
 

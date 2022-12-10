@@ -45,9 +45,9 @@ public:
                 auto host = viewer_creator::create_host(std::move(ws_));
                 auto room = room_creator::create_room(std::weak_ptr(host), state_);
                 state_->add_room(room->get_id(), std::weak_ptr(room));
-                room->start();
                 host->set_room(room);
                 host->start();
+                room->start();
 
             } else if (type_ == join) {
                 auto room_id = boost::lexical_cast<uuid>(req_["room_id"]);

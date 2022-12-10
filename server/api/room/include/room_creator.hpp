@@ -8,11 +8,11 @@
 #include "shared_state.h"
 
 typedef boost::uuids::uuid uuid;
-class Host;
+
 
 class room_creator{
 public:
-    static std::shared_ptr<Room> create_room(const std::weak_ptr<Host>& host, state_ptr state){
+    static std::shared_ptr<Room> create_room(const std::weak_ptr<Viewer>& host, state_ptr state){
         return std::make_shared<Room>(host.lock()->get_id(), boost::uuids::random_generator()(), std::move(state));
     }
 };

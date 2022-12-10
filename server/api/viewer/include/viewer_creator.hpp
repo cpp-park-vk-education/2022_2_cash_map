@@ -15,8 +15,9 @@ public:
                 (std::move(ws), boost::uuids::random_generator()(), std::move(room));
     }
 
-    static std::shared_ptr<Host> create_host(stream_ptr && ws){
-        return std::make_shared<Host>(std::move(ws), boost::uuids::random_generator()());
+    static std::shared_ptr<Viewer> create_host(stream_ptr && ws){
+        access_options opts{true, true, true};
+        return std::make_shared<Viewer>(std::move(ws), boost::uuids::random_generator()(), opts);
     }
 };
 

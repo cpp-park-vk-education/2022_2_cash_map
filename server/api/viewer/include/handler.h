@@ -3,20 +3,26 @@
 
 #include <string>
 #include <memory>
-
+#include <utility>
 
 #include "room.h"
 #include "types.hpp"
 #include "serializer.h"
+#include "response_creator.hpp"
 
 typedef std::shared_ptr<IRoom> room_ptr;
 typedef std::shared_ptr<IViewer> viewer_ptr;
 
 class handler {
 public:
-    handler(std::string&& msg, const viewer_ptr& viewer, const room_ptr& room);
+    handler(std::string&& msg, viewer_ptr  viewer, room_ptr  room):
+    viewer_(std::move(viewer)),
+    room_(std::move(room)),
+    str_req_(std::move(msg))
+    {}
     void define_type(){
         auto it = types.find(req_["type"]);
+        std::cout << req_["type"] << std::endl;
         type_ = it->second;
     }
     void handle_request(){
@@ -25,68 +31,84 @@ public:
             define_type();
             switch (type_) {
                 case leave:
-
+                    viewer_->do_close();
                     // TODO send ok
                     break;
                 case pong:
                     // TODO implement
                     break;
-                case play:
-                    if(!viewer->get_a_opts().can_pause){
-                        // TODO send forbidden
+                case play: {
+                    if (!viewer_->get_a_opts().can_pause) {
+                        auto msg_ = response_creator::create_with_status(403, "operation forbidden");
+                        auto str_msg_ = serializer::serialize_response(play, msg_);
+                        viewer_->send_message(str_msg_);
                         return;
                     }
+                    auto msg = response_creator::create_with_status(200, "ok");
+                    auto str_msg = serializer::serialize_response(play, msg);
                     room_->play();
-                    // TODO send ok
+                }
                     break;
                 case pause_:
-                    if(!viewer->get_a_opts().can_pause){
-                        // TODO send forbidden
+                    if(!viewer_->get_a_opts().can_pause){
+                        auto msg_ = response_creator::create_with_status(403, "operation forbidden");
+                        auto str_msg_ = serializer::serialize_response(pause_, msg_);
+                        viewer_->send_message(str_msg_);
                         return;
                     }
                     room_->pause();
                     // TODO send ok
                     break;
                 case s_time:
-                    if(!viewer->get_a_opts().can_rewind){
-                        // TODO send forbidden
+                    if(!viewer_->get_a_opts().can_rewind){
+                        auto msg_ = response_creator::create_with_status(403, "operation forbidden");
+                        auto str_msg_ = serializer::serialize_response(s_time, msg_);
+                        viewer_->send_message(str_msg_);
                         return;
                     }
-                    // TODO change signature
-                    room_->synchronize();
+
+                    room_->synchronize(boost::lexical_cast<boost::posix_time::time_duration>(req_["time"]));
                     // TODO send ok
                     break;
                 case s_nick:
-                    if(viewer->get_nickname() == req_["nick"]){
-                        // TODO send ok
+                    if(viewer_->get_nickname() == req_["nick"]){
+                        auto msg = response_creator::create_with_status(200, "ok");
+                        auto str_msg = serializer::serialize_response(s_nick, msg);
+                        viewer_->send_message(str_msg);
                         return;
                     }
-                    room_->set_nickname(viewer->get_id(), std::move(req_["nick"]));
+                    viewer_->set_nickname(req_["nick"]);
+                    room_->set_nickname(viewer_->get_id(), std::move(req_["nick"]));
                     break;
                 case sync_:
-                    if(!viewer->get_a_opts().is_host){
+                    if(!viewer_->get_a_opts().is_host){
                         // TODO send forbidden
                         return;
                     }
-                    room_->synchronize();
+                    room_->synchronize(boost::lexical_cast<boost::posix_time::time_duration>(req_["time"]));
                     break;
                 case s_src:
-                    if(!viewer->get_a_opts().is_host){
-                        // TODO send forbidden
+                    if(!viewer_->get_a_opts().is_host){
+                        auto msg_ = response_creator::create_with_status(403, "operation forbidden");
+                        auto str_msg_ = serializer::serialize_response(s_src, msg_);
+                        viewer_->send_message(str_msg_);
                         return;
                     }
                     room_->set_resource(req_["src"]);
                     //TODO send ok
                     break;
                 case s_access: {
-                    if (!viewer->get_a_opts().is_host) {
-                        // TODO send forbidden
+                    if (!viewer_->get_a_opts().is_host) {
+                        auto msg_ = response_creator::create_with_status(403, "operation forbidden");
+                        auto str_msg_ = serializer::serialize_response(s_access, msg_);
+                        viewer_->send_message(str_msg_);
                         return;
                     }
-                    auto opts = serializer::deserialize_access_opts(req_["opts"]);
-                    access_options to_set {opts["pause"], opts["rewind"], opts["host"]};
-                    room_->get_viewer(boost::lexical_cast<uuid>(req_["viewer"])).lock()->set_access_opts(to_set);
 
+                    access_options to_set {boost::lexical_cast<bool>(req_["pause"]),
+                                           boost::lexical_cast<bool>(req_["rewind"]),
+                                           boost::lexical_cast<bool>(req_["host"])};
+                    room_->get_viewer(boost::lexical_cast<uuid>(req_["viewer"])).lock()->set_access_opts(to_set);
                     break;
                 }
                 default:
@@ -94,15 +116,16 @@ public:
                     break;
             }
         }
-        catch (...){
-
+        // TODO replace with custom exceptions
+        catch (nlohmann::json::exception& ec){
+            std::cout << ec.what() << std::endl;
         }
 
 
     }
 private:
     type type_ = invalid;
-    viewer_ptr viewer;
+    viewer_ptr viewer_;
     room_ptr room_;
     std::string str_req_;
     std::unordered_map<std::string, std::string> req_;
