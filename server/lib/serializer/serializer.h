@@ -63,6 +63,21 @@ public:
         return nlohmann::to_string(data);
     }
 
+    static std::string serialize_timings(type type_, const std::vector<std::pair<std::string, std::string>>& timings){
+        nlohmann::json data{};
+        data["type"] = type_;
+        auto viewers_arr = nlohmann::json::array();
+        for(const auto& viewer: timings){
+            auto v_obj = nlohmann::json{};
+            v_obj["id"] = viewer.first;
+            v_obj["time"] = viewer.second;
+            viewers_arr.push_back(v_obj);
+        }
+        data["timings"] = viewers_arr;
+        return nlohmann::to_string(data);
+    }
+
+
 
 };
 #endif //WATCH_UP_PROJECT_SERIALIZER_H

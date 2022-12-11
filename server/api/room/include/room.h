@@ -35,10 +35,10 @@ public:
     virtual void join (w_viewer_ptr)                                 = 0;
     virtual void leave(const uuid& id, const std::string& nick)      = 0;
 
-    virtual void check_timings()                                     = 0;
+    virtual void ping()                                              = 0;
     virtual void pause()                                             = 0;
     virtual void play()                                              = 0;
-    virtual void synchronize(const boost::posix_time::time_duration &)       = 0;
+    virtual void synchronize(const boost::posix_time::time_duration &)= 0;
 
     virtual void set_resource(const std::string&)                    = 0;
     virtual void send_chat_msg(uuid viewer, const std::string& msg)  = 0;
@@ -50,6 +50,7 @@ public:
 
     virtual void start_timer()                                       = 0;
     virtual void stop_timer()                                        = 0;
+    virtual void on_pong(std::unordered_map<std::string, std::string> &req) =0;
 
 };
 
@@ -61,7 +62,7 @@ public:
     void start()                                             override;
     void join (w_viewer_ptr)                                 override;
     void leave(const uuid& id, const std::string& nick)      override;
-    void check_timings()                                     override;
+    void ping()                                              override;
     void pause()                                             override;
     void play()                                              override;
     void synchronize(const boost::posix_time::time_duration&)override;
@@ -74,16 +75,26 @@ public:
 
     const uuid get_id() const                                override;
     w_viewer_ptr get_viewer(const uuid& )                    override;
+    void on_pong(std::unordered_map<std::string, std::string> &req) override;
 
 private:
+    struct ping_info{
+        boost::posix_time::time_duration player_time;
+        boost::posix_time::time_duration latency;
+        boost::posix_time::ptime response;
+        uuid viewer_id;
+    };
     bool playing;
     uuid id_;
     uuid host_;
     state_ptr state_;
     boost::asio::deadline_timer check_timer_;
+   // boost::asio::deadline_timer ping_timeout;
     std::unordered_map<uuid, w_viewer_ptr, boost::hash<uuid>> participants_;
     std::vector<std::pair<uuid, std::string>> viewers_;
+    std::pair<boost::posix_time::ptime, std::vector<ping_info>> ping_;
     std::string src_;
+
 };
 
 #endif //WATCH_UP_PROJECT_ROOM_H

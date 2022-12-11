@@ -34,5 +34,14 @@ public:
         data["time"] = str_time;
         return data;
     }
+
+    static std::unordered_map<std::string, std::string> create_ping(const boost::posix_time::ptime& server_time){
+        ;
+        std::unordered_map<std::string, std::string> data{};
+        std::stringstream ss_time;
+        ss_time << server_time;
+        data["time"] = ss_time.str();
+        return data;
+    }
 };
 #endif //WATCH_UP_PROJECT_RESPONSE_CREATOR_HPP

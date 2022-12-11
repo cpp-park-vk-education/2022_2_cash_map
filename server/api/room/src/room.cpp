@@ -4,6 +4,7 @@
 #include <utility>
 
 #include <boost/uuid/uuid_io.hpp>
+#include <boost/date_time/posix_time/time_parsers.hpp>
 
 #include "viewer.h"
 #include "shared_state.h"
@@ -41,7 +42,7 @@ void Room::join(w_viewer_ptr viewer) {
     viewers_.emplace_back(viewer.lock()->get_id(), viewer.lock()->get_nickname());
 }
 
-void Room::leave(const uuid& id, const std::string& nick) {
+void Room::leave(const uuid& id, const std::string& nick){
     auto viewer_dto = std::make_pair(id, nick);
     auto it = find(viewers_.begin(), viewers_.end(), viewer_dto);
     participants_.erase(id);
@@ -52,20 +53,23 @@ void Room::leave(const uuid& id, const std::string& nick) {
     }
 }
 
-void Room::check_timings() {
+void Room::ping(){
     std::cout << "[check timings] id: "<< boost::uuids::to_string(id_)<< std::endl;
     if(participants_.empty()){
         return;
     }
     if(!playing){
         stop_timer();
-        return;
     }
     std::cout << "[check timings]\n";
+    auto ping_time = boost::posix_time::microsec_clock::universal_time();
+    auto res = response_creator::create_ping(ping_time);
+    auto msg = serializer::serialize_response(type::ping, res);
+    ping_.first = ping_time;
     for(const auto& viewer : participants_){
-        viewer.second.lock()->send_message("ping");
+        viewer.second.lock()->send_message(msg);
     }
-    start_timer();
+
 }
 
 void Room::pause() {
@@ -119,7 +123,7 @@ void Room::start_timer() {
         if(ec){
             std::cout << "[check timings error] " << ec.message() << std::endl;
         }
-        self->check_timings();
+        self->ping();
     });
 }
 
@@ -142,4 +146,31 @@ void Room::set_nickname(const uuid &viewer, std::string &&nick) {
     }
 }
 
+
+void Room::on_pong(std::unordered_map<std::string, std::string> &req) {
+    ping_.second.emplace_back(ping_info{
+        boost::posix_time::duration_from_string(req["cur_time"]),
+        boost::posix_time::microsec_clock::universal_time() - ping_.first,
+        boost::posix_time::microsec_clock::universal_time(),
+        boost::lexical_cast<uuid>(req["v_id"])
+    });
+    if (ping_.second.size() == participants_.size()){
+        std::vector<std::pair<std::string, std::string>> timings;
+        for(const auto& ping : ping_.second){
+            auto timing = ping.player_time + ping.latency +
+                    (ping_.second.back().response - ping.response);
+
+            std::stringstream ss_time;
+            ss_time << timing;
+            timings.emplace_back
+            (boost::lexical_cast<std::string>(ping.viewer_id), ss_time.str());
+        }
+        auto msg = serializer::serialize_timings(type::pong, timings);
+        for(const auto& p: participants_){
+            p.second.lock()->send_message(msg);
+        }
+        ping_.second.clear();
+        start_timer();
+    }
+}
 

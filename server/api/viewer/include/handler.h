@@ -32,10 +32,10 @@ public:
             switch (type_) {
                 case leave:
                     viewer_->do_close();
-                    // TODO send ok
                     break;
                 case pong:
-                    // TODO implement
+                    req_["v_id"] = boost::lexical_cast<std::string>(viewer_->get_id());
+                    room_->on_pong(req_);
                     break;
                 case play: {
                     if (!viewer_->get_a_opts().can_pause) {

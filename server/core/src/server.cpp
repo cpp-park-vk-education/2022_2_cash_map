@@ -13,7 +13,7 @@ namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
 namespace net = boost::asio;            // from <boost/asio.hpp>
 using tcp = boost::asio::ip::tcp;
 
-Server::Server(): started(false), opts_({"172.20.10.2", 8080})
+Server::Server(): started(false), opts_({"127.0.0.1", 8080})
 {}
 
 void Server::run() {
