@@ -1,24 +1,57 @@
-project(client)
+cmake_minimum_required(VERSION 3.5)
 
-file(GLOB SOURCES "src/*.cpp")
+project(WatchUpApp VERSION 0.1 LANGUAGES CXX)
 
-list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/client.cpp")
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+#SET(C:/Qt/6.2.4/msvc2019_64 C:/Qt)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
-add_library(${PROJECT_NAME}_lib STATIC ${SOURCES})
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-target_include_directories(${PROJECT_NAME}_lib PUBLIC include)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network WebSockets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network WebSockets)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS WebEngineWidgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS WebEngineWidgets)
 
-add_executable(${PROJECT_NAME} ./src/client.cpp)
+set(CMAKE_AUTOUIC_SEARCH_PATHS static/ui)
 
-target_include_directories(${PROJECT_NAME} PUBLIC include)
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE HEADERS "include/*.h")
+MESSAGE(SOURCES)
 
-target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_lib)
+add_library(WatchUpApp_lib STATIC ${HEADERS} ${SOURCES} ${UI})
 
-if (BUILD_TESTS)
-    add_subdirectory(tests)
-endif()
+add_executable(WatchUpApp
+    "main.cpp"
+)
 
-if (BUILD_COVERAGE)
-    add_coverage(${PROJECT_NAME})
-    add_coverage(${PROJECT_NAME}_lib)
+target_link_libraries(WatchUpApp PRIVATE WatchUpApp_lib)
+
+
+target_link_libraries(${PROJECT_NAME}_lib PUBLIC Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(${PROJECT_NAME}_lib  PRIVATE Qt${QT_VERSION_MAJOR}::Network)
+target_link_libraries(${PROJECT_NAME}_lib  PRIVATE Qt${QT_VERSION_MAJOR}::WebSockets)
+target_link_libraries(${PROJECT_NAME}_lib PRIVATE  Qt${QT_VERSION_MAJOR}::WebEngineWidgets)
+
+
+
+set_target_properties(WatchUpApp PROPERTIES
+    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+    MACOSX_BUNDLE TRUE
+    WIN32_EXECUTABLE TRUE
+)
+
+install(TARGETS WatchUpApp
+    BUNDLE DESTINATION .
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+if(QT_VERSION_MAJOR EQUAL 6)
+    qt_finalize_executable(WatchUpApp)
 endif()
