@@ -3,11 +3,11 @@
 
 #include "RoomMember.h"
 
+#include <QString>
 #include <vector>
 
 class Room {
 public:
-    virtual int roomId();
 
     virtual std::vector<RoomMember *> members() = 0;
 

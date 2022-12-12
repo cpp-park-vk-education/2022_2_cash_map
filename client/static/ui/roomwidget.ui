@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
-    <height>703</height>
+    <width>919</width>
+    <height>723</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,9 +15,12 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
-    <widget class="QLineEdit" name="lineEdit"/>
+    <widget class="QStackedWidget" name="videoWatcherStackedWidget">
+     <widget class="QWidget" name="page"/>
+     <widget class="QWidget" name="page_2"/>
+    </widget>
    </item>
-   <item row="2" column="0">
+   <item row="1" column="0">
     <widget class="QScrollArea" name="scrollArea">
      <property name="widgetResizable">
       <bool>true</bool>
@@ -27,14 +30,14 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>976</width>
-        <height>298</height>
+        <width>899</width>
+        <height>301</height>
        </rect>
       </property>
      </widget>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="2" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLineEdit" name="lineEdit_2"/>
@@ -42,14 +45,24 @@
      <item>
       <widget class="QPushButton" name="pushButton">
        <property name="text">
-        <string>PushButton</string>
+        <string>Enter</string>
        </property>
       </widget>
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
-    <widget class="QTextBrowser" name="textBrowser"/>
+   <item row="3" column="0">
+    <widget class="QPushButton" name="leaveButton">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Leave</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

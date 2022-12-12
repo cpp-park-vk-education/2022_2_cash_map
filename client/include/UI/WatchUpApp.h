@@ -2,11 +2,10 @@
 #define WATCHUPAPP_H
 
 #include "RoomWidget.h"
-#include "LoginWidget.h"
-#include "include/domain/AppAutorizationManager.h"
-#include "include/domain/interface/AuthorizationManager.h"
+#include "include/domain/MainWidgetManager.h"
 #include "include/domain/interface/SearchItemCollector.h"
 #include <QMainWindow>
+#include <include/network/WatchUpServerClient.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class WatchUpApp; }
@@ -19,21 +18,19 @@ public:
     WatchUpApp(QWidget *parent = nullptr);
     ~WatchUpApp();
 
-    AuthorizationManager *authManager;
-    SearchItemCollector *searchCollector;
+//    SearchItemCollector *searchCollector;
+public slots:
+    void openRoom();
+
+    void enterRoom();
 
 private:
     Ui::WatchUpApp *ui;
+    RoomWidget *roomWidget;
 
-    StartWidget startWidget;
-    RoomWidget roomWidget;
+    MainWidgetManager *manager;
 
     SearchItemCollector *createSearchItemCollector();
-    AuthorizationManager *createAuthorizationManager();
 
-private slots:
-    void createRoom();
-    void openRoom();
-    void showSearchResults();
 };
 #endif // WATCHUPAPP_H

@@ -2,37 +2,22 @@
 #define VIDEOROOMMEMBER_H
 
 #include "include/domain/models/interface/RoomMember.h"
-#include "include/domain/models/interface/User.h"
+#include <QString>
 
 
 class VideoRoomMember : public RoomMember {
 public:
-    VideoRoomMember(User *user, int timeStamp, bool isHost, bool playbackStatus);
+    VideoRoomMember(const QString &username);
     ~VideoRoomMember() = default;
     VideoRoomMember(VideoRoomMember &member) = default;
     VideoRoomMember(VideoRoomMember &&member) = default;
     VideoRoomMember &operator=(VideoRoomMember &member) = default;
     VideoRoomMember &operator=(VideoRoomMember &&member) = default;
 
-    virtual std::string username() override;
-
-    virtual int currentTimeStamp() override;
-
-    virtual bool onPause() override;
-
-    virtual bool isHost() override;
-
-    virtual void setTimeStamp(int newTimeStamp) override;
-
-    virtual void setHostStatus() override;
-
-    virtual void setPlaybackStatus(bool status) override;
+    virtual QString getUsername() override;
 
 private:
-    User *user;
-    int timeStamp;
-    bool hostStatus;
-    bool playbackStatus;
+    QString username;
 };
 
 

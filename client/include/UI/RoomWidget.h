@@ -2,6 +2,8 @@
 #define ROOMWIDGET_H
 
 #include <QWidget>
+#include "include/UI/YoutubeWatcher.h"
+#include "include/domain/interface/RoomManager.h"
 
 namespace Ui {
 class RoomWidget;
@@ -17,6 +19,10 @@ public:
 
 private:
     Ui::RoomWidget *ui;
+    RoomManager *manager;
+
+    YoutubeWatcher *watcher;
+    CustomWebView *webView;
 
 };
 

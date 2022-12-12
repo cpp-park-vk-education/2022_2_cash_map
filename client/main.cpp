@@ -2,10 +2,12 @@
 
 #include <QApplication>
 
+#include "include/UI/Base.h"
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    WatchUpApp w;
+    Base w;
     w.show();
     return a.exec();
 }

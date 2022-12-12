@@ -1,17 +1,11 @@
-#include <include/domain/AppAutorizationManager.h>
+#include "include/domain/AppAutorizationManager.h"
 
 
-AppAuthorizationManager::AppAuthorizationManager() : user(nullptr) {}
-
-AppAuthorizationManager::~AppAuthorizationManager() {
-    delete user;
-}
-
-AuthorizationStatus AppAuthorizationManager::authorizeUser(std::string username, std::string password) {
+AuthenticationStatus AppAuthorizationManager::authenticateUser(const QString &username, const QString &password) {
     // авторизация
     return Success;
 };
 
-bool AppAuthorizationManager::isUserAuthorized() {
-    return true;
+bool AppAuthorizationManager::isThereAuthorizedUser() {
+    return false;
 };

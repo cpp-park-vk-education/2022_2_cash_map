@@ -3,22 +3,29 @@
 
 #include <QtWebSockets/QtWebSockets>
 
+
 class WatchUpServerClient : public QObject {
 
     Q_OBJECT
 
 public:
-    explicit WatchUpServerClient(const QUrl &url, QObject *parent = nullptr);
+    WatchUpServerClient(QObject *parent = nullptr);
+    ~WatchUpServerClient();
 
-Q_SIGNALS:
-    void connectionClosed();
+    void connectToServer();
+    void sendRequest(const QString &message);
+    void close();
 
-//private Q_SLOTS:
-//    void onConnected();
-//    void onResponseReceived(QString rawData);
+public slots:
+    void logError(QAbstractSocket::SocketError error);
+signals:
+    void disconnected();
+    void connected();
+
+    void onResponseReceived(const QString &message);
 
 private:
-    QWebSocket webSocket;
+    QWebSocket *webSocket;
     QUrl url;
 
 };

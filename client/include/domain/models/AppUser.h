@@ -13,7 +13,7 @@ public:
     AppUser &operator=(AppUser &user) = default;
     AppUser &operator=(AppUser &&user) = default;
 
-    virtual std::string userName();
+    virtual std::string userName() override;
 private:
     std::string username;
 };

@@ -26,6 +26,10 @@ public:
     virtual int getRoomId() = 0;
 
     virtual void sendMessage() = 0;
+
+    virtual void updateRoomState() = 0;
+public slots:
+    virtual void checkRoomState() = 0;
 signals:
     void memberKicked(std::string username);
 

@@ -3,18 +3,16 @@
 
 
 #include "include/domain/interface/AuthorizationManager.h"
-#include "include/domain/models/interface/User.h"
 
 class AppAuthorizationManager : public AuthorizationManager {
 public:
-    AppAuthorizationManager();
-    ~AppAuthorizationManager();
+    AppAuthorizationManager() = default;
+    ~AppAuthorizationManager() = default;
 
-    virtual AuthorizationStatus authorizeUser(std::string username, std::string password) override;
+    virtual AuthenticationStatus authenticateUser(const QString &username, const QString &password) override;
 
-    virtual bool isUserAuthorized() override;
-private:
-    User *user = nullptr;
+    virtual bool isThereAuthorizedUser() override;
+
 };
 
 
