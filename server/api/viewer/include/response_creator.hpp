@@ -11,11 +11,11 @@
 
 class response_creator{
 public:
-    static std::unordered_map<std::string, std::string> create_with_status(unsigned short code, const std::string& msg){
+    static std::string create_with_status(type type_, unsigned short code){
         std::unordered_map<std::string, std::string> data{};
         data["code"] = std::to_string(code);
-        data["message"] = msg;
-        return data;
+        auto out = serializer::serialize_response(type_, data);
+        return out;
     }
     static std::unordered_map<std::string, std::string> create_with_room(unsigned short code, const std::string& msg, const uuid& room_id){
         std::unordered_map<std::string, std::string> data{};
@@ -36,7 +36,6 @@ public:
     }
 
     static std::unordered_map<std::string, std::string> create_ping(const boost::posix_time::ptime& server_time){
-        ;
         std::unordered_map<std::string, std::string> data{};
         std::stringstream ss_time;
         ss_time << server_time;

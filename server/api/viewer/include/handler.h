@@ -28,6 +28,7 @@ public:
     void handle_request(){
         try{
             req_=serializer::deserialize(str_req_);
+            std::cout <<"[viewer handle request]\n" << str_req_ << std::endl;
             define_type();
             switch (type_) {
                 case leave:
@@ -39,92 +40,91 @@ public:
                     break;
                 case play: {
                     if (!viewer_->get_a_opts().can_pause) {
-                        auto msg_ = response_creator::create_with_status(403, "operation forbidden");
-                        auto str_msg_ = serializer::serialize_response(play, msg_);
-                        viewer_->send_message(str_msg_);
-                        return;
+                        status_ = 403;
+                        break;
                     }
-                    auto msg = response_creator::create_with_status(200, "ok");
-                    auto str_msg = serializer::serialize_response(play, msg);
+                    status_ = 200;
                     room_->play();
                 }
                     break;
-                case pause_:
-                    if(!viewer_->get_a_opts().can_pause){
-                        auto msg_ = response_creator::create_with_status(403, "operation forbidden");
-                        auto str_msg_ = serializer::serialize_response(pause_, msg_);
-                        viewer_->send_message(str_msg_);
-                        return;
-                    }
-                    room_->pause();
-                    // TODO send ok
-                    break;
-                case s_time:
-                    if(!viewer_->get_a_opts().can_rewind){
-                        auto msg_ = response_creator::create_with_status(403, "operation forbidden");
-                        auto str_msg_ = serializer::serialize_response(s_time, msg_);
-                        viewer_->send_message(str_msg_);
-                        return;
+                case pause_: {
+                    if (!viewer_->get_a_opts().can_pause) {
+                        status_ = 403;
+                        break;
                     }
 
+                    room_->pause(boost::lexical_cast<boost::posix_time::time_duration>(req_["time"]));
+                    status_ = 200;
+                }
+                    break;
+                case s_time: {
+                    if (!viewer_->get_a_opts().can_rewind) {
+                        status_ = 403;
+                        break;
+                    }
+                    status_ = 200;
                     room_->synchronize(boost::lexical_cast<boost::posix_time::time_duration>(req_["time"]));
-                    // TODO send ok
+                }
                     break;
                 case s_nick:
-                    if(viewer_->get_nickname() == req_["nick"]){
-                        auto msg = response_creator::create_with_status(200, "ok");
-                        auto str_msg = serializer::serialize_response(s_nick, msg);
-                        viewer_->send_message(str_msg);
-                        return;
+                    if (viewer_->get_nickname() == req_["nick"]) {
+                        status_ = 200;
+                        break;
                     }
                     viewer_->set_nickname(req_["nick"]);
                     room_->set_nickname(viewer_->get_id(), std::move(req_["nick"]));
+                    status_ = 200;
                     break;
-                case sync_:
-                    if(!viewer_->get_a_opts().is_host){
-                        // TODO send forbidden
-                        return;
+                case sync_: {
+                    if (!viewer_->get_a_opts().is_host) {
+                        status_ = 403;
+                        break;
                     }
+                    status_ = 200;
                     room_->synchronize(boost::lexical_cast<boost::posix_time::time_duration>(req_["time"]));
+                }
                     break;
-                case s_src:
-                    if(!viewer_->get_a_opts().is_host){
-                        auto msg_ = response_creator::create_with_status(403, "operation forbidden");
-                        auto str_msg_ = serializer::serialize_response(s_src, msg_);
-                        viewer_->send_message(str_msg_);
-                        return;
+                case s_src: {
+                    if (!viewer_->get_a_opts().is_host) {
+                        status_ = 403;
+                        break;
                     }
+                    status_ = 200;
                     room_->set_resource(req_["src"]);
-                    //TODO send ok
+                }
                     break;
                 case s_access: {
                     if (!viewer_->get_a_opts().is_host) {
-                        auto msg_ = response_creator::create_with_status(403, "operation forbidden");
-                        auto str_msg_ = serializer::serialize_response(s_access, msg_);
-                        viewer_->send_message(str_msg_);
-                        return;
+                        status_ = 403;
+                        break;
                     }
-
                     access_options to_set {boost::lexical_cast<bool>(req_["pause"]),
                                            boost::lexical_cast<bool>(req_["rewind"]),
                                            boost::lexical_cast<bool>(req_["host"])};
                     room_->get_viewer(boost::lexical_cast<uuid>(req_["viewer"])).lock()->set_access_opts(to_set);
+                    status_ = 200;
                     break;
                 }
                 default:
-
+                    status_ = 405;
                     break;
             }
         }
         // TODO replace with custom exceptions
         catch (nlohmann::json::exception& ec){
+            status_ = 400;
             std::cout << ec.what() << std::endl;
         }
-
-
+        catch(...){
+            std::cout << "ex\n";
+            status_ = 500;
+        }
+        auto msg = response_creator::create_with_status(type_, status_);
+        viewer_->send_message(msg);
     }
 private:
     type type_ = invalid;
+    unsigned short status_;
     viewer_ptr viewer_;
     room_ptr room_;
     std::string str_req_;

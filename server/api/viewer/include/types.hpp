@@ -34,7 +34,22 @@ static std::unordered_map<std::string, type> const types = {
         {"sync",    type::sync_   },
         {"s_src",   type::s_src   },
         {"s_access",type::s_access},
+};
 
+static std::unordered_map<type, std::string> const type_to_string = {
+        {type::invalid, "invalid"  },
+        {type::create,   "create"  },
+        {type::join ,    "join"    },
+        {type::leave,    "leave"   },
+        {type::ping,     "ping"    },
+        {type::pong,     "pong"    },
+        {type::play,     "play"    },
+        {type::pause_,   "pause"   },
+        {type::s_time,   "s_time"  },
+        {type::s_nick,   "s_nick"  },
+        {type::sync_ ,   "sync"    },
+        {type::s_src ,   "s_src"   },
+        {type::s_access, "s_access"},
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(type, {

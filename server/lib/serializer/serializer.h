@@ -56,7 +56,12 @@ public:
 
     static std::string serialize_response(type type_, const std::unordered_map<std::string, std::string>& fields){
         nlohmann::json data{};
-        data["type"] = type_;
+        if(type_ == invalid){
+            data["type"] = "invalid";
+        }
+        else {
+            data["type"] = type_;
+        }
         for(const auto& [key, value] : fields){
             data[key] = value;
         }

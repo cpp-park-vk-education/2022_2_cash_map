@@ -57,8 +57,8 @@ public:
 
 class Viewer: public IViewer, public std::enable_shared_from_this<Viewer> {
 public:
-    Viewer(stream_ptr && ws, uuid&& id, room_ptr&& room = nullptr);
-    Viewer(stream_ptr && ws, uuid&& id, access_options a_opts, room_ptr&& room = nullptr);
+    Viewer(stream_ptr && ws, uuid&& id, std::string nickname, room_ptr&& room = nullptr);
+    Viewer(stream_ptr && ws, uuid&& id, access_options a_opts, std::string nickname, room_ptr&& room = nullptr);
     ~Viewer()                                   override;
 
     void start()                                override;

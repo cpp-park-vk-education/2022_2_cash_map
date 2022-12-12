@@ -11,6 +11,7 @@
 #include "serializer.h"
 #include "viewer_creator.hpp"
 #include "room_creator.hpp"
+#include "response_creator.hpp"
 
 namespace beast = boost::beast;
 namespace websocket = beast::websocket;
@@ -34,16 +35,23 @@ public:
 
     void define_type(){
         auto it = types.find(req_["type"]);
+        if(it == types.end())
+            return;
         type_ = it->second;
     }
 
     void handle_request(){
         try {
             req_ = serializer::deserialize(str_req_);
+
             define_type();
+            std::cout << str_req_ << std::endl;
             if (type_ == create) {
-                auto host = viewer_creator::create_host(std::move(ws_));
+                //auto nickname = req_["nick"];
+                auto host = viewer_creator::create_host(std::move(ws_), "blank");
                 auto room = room_creator::create_room(std::weak_ptr(host), state_);
+
+
                 state_->add_room(room->get_id(), std::weak_ptr(room));
                 host->set_room(room);
                 host->start();
@@ -51,21 +59,30 @@ public:
 
             } else if (type_ == join) {
                 auto room_id = boost::lexical_cast<uuid>(req_["room_id"]);
+                //auto nickname = req_["nick"];
                 auto room = state_->get_room(room_id);
                 if (!room.lock()) {
-                    // TODO send not found
+                    //ws_->async_write("not found");
                     return;
                 }
-                viewer_creator::create_viewer(std::move(ws_), room.lock())->start();
+                viewer_creator::create_viewer(std::move(ws_), "blank", room.lock())->start();
             } else if (type_ == invalid) {
-                // TODO send bad request
+                ws_->async_write(net::buffer("bad request"),
+                                 [](error_code , std::size_t){
+                                     std::cout << "send\n";
+                });
                 return;
             } else {
                 // TODO send method not allowed
+                ws_->async_write(net::buffer("not allowed"),
+                [](error_code , std::size_t){
+                        std::cout << "send\n";
+                });
             }
         }
-        catch (...){
-
+        catch (nlohmann::json::exception& ec){
+            std::cout << ec.what();
+            return;
         }
     }
 private:

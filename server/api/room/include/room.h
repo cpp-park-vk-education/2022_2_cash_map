@@ -36,7 +36,7 @@ public:
     virtual void leave(const uuid& id, const std::string& nick)      = 0;
 
     virtual void ping()                                              = 0;
-    virtual void pause()                                             = 0;
+    virtual void pause(const boost::posix_time::time_duration &)     = 0;
     virtual void play()                                              = 0;
     virtual void synchronize(const boost::posix_time::time_duration &)= 0;
 
@@ -63,7 +63,7 @@ public:
     void join (w_viewer_ptr)                                 override;
     void leave(const uuid& id, const std::string& nick)      override;
     void ping()                                              override;
-    void pause()                                             override;
+    void pause(const boost::posix_time::time_duration &)     override;
     void play()                                              override;
     void synchronize(const boost::posix_time::time_duration&)override;
     void send_chat_msg(uuid viewer, const std::string& msg)  override;

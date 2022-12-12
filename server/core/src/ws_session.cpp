@@ -20,7 +20,7 @@ void ws_session::run(){
 void ws_session::do_read() {
     ws_->async_read(buffer_,
     [self{shared_from_this()}](error_code ec, std::size_t){
-        if(ec){
+        if(ec && ec != boost::asio::error::eof){
             std::cout << "[ws async read error]" << ec.message() <<  std::endl;
             return;
         }

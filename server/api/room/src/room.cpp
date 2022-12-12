@@ -72,14 +72,16 @@ void Room::ping(){
 
 }
 
-void Room::pause() {
+void Room::pause(const boost::posix_time::time_duration & time) {
     if(!playing){
         return;
     }
     playing = false;
+    auto msg = serializer::serialize_response(pause_, {});
     for(const auto& p : participants_){
-        p.second.lock()->send_message("");;
+        p.second.lock()->send_message(msg);;
     }
+    synchronize(time);
 }
 
 void Room::play() {
@@ -87,8 +89,9 @@ void Room::play() {
         return;
     }
     playing = true;
+    auto msg = serializer::serialize_response(type::play, {});
     for(const auto& p : participants_){
-        p.second.lock()->send_message("");
+        p.second.lock()->send_message(msg);
     }
     start_timer();
 }
@@ -96,8 +99,9 @@ void Room::play() {
 void Room::synchronize(const boost::posix_time::time_duration & timing) {
     auto msg = serializer::serialize_response(s_time,
                                               response_creator::create_with_timing(timing));
+
     for(const auto& p : participants_){
-        p.second.lock()->send_message("");
+        p.second.lock()->send_message(msg);
     }
 }
 
@@ -133,6 +137,14 @@ void Room::stop_timer() {
 
 void Room::set_resource(const std::string & src) {
     src_ = src;
+    // TODO refactor
+    std::unordered_map<std::string, std::string> res{
+            {"src", src}
+    };
+    auto msg = serializer::serialize_response(s_src, res);
+    for(const auto& p : participants_){
+        p.second.lock()->send_message(msg);
+    }
 }
 
 w_viewer_ptr Room::get_viewer(const uuid& v_id) {
