@@ -45,6 +45,7 @@ class IVideoWatcher {
 
 class YoutubeWatcher : IVideoWatcher {
 public:
+    explicit YoutubeWatcher(QWebEngineView *_view);
     /// @brief Переключает режимы PLAY / PAUSE видео
     virtual void togglePlay() override;
     /// @brief Устанавливает время плеера
@@ -79,7 +80,8 @@ public:
     /// @return возвращает готовую ссылку, которую можно передавать в setContentPath
     static QString getLinkByVideoId(const QString& id);
 private:
-    QWebEngineView *view;
+    QWebEngineView *view  = nullptr;
+    bool urlWasSetted = false;
 };
 
 #endif //INC_2022_2_CASH_MAP_VIDEOWATCHER_H

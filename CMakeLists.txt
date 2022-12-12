@@ -17,7 +17,7 @@ option(BUILD_COVERAGE "Build code coverage" OFF)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wpedantic -Werror -Wall -Wextra")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-command-line-argument")
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow -Wnon-virtual-dtor")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow")
 
 find_package(GTest CONFIG)
 if (NOT GTest_FOUND)
