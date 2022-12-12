@@ -35,8 +35,6 @@ void YoutubeWatcher::setCurrentSpeed(double time) {
 }
 
 void YoutubeWatcher::setContentPath(const QString &path) {
-    if (!urlWasSetted)
-        throw std::runtime_error("Can't operate with Youtube Watcher before setting url of video");
     urlWasSetted = true;
     view->setUrl(QUrl(path));
 }

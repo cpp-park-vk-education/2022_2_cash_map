@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
                                           "border-radius: 25px;background-color:black;"));
     ui->centralwidget->layout()->addWidget(wgt);
 
-    auto view = new QWebEngineView(wgt);
+    QWebEngineView *view = new QWebEngineView(wgt);
     wgt->layout()->addWidget(view);
     watcher = new YoutubeWatcher(view);
 

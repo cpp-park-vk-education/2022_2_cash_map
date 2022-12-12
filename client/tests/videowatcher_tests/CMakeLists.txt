@@ -44,8 +44,8 @@ else()
     endif()
 endif()
 
-target_link_libraries(WatchUp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::WebEngineWidgets)
-target_include_directories(WatchUp PRIVATE ../../include)
+target_link_libraries(WatchUp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::WebEngineWidgets client_lib)
+target_include_directories(WatchUp PUBLIC ../../include)
 set_target_properties(WatchUp PROPERTIES
         MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
         MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
