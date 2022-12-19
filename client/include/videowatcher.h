@@ -79,6 +79,8 @@ public:
     /// @param id id ютубовского видео
     /// @return возвращает готовую ссылку, которую можно передавать в setContentPath
     static QString getLinkByVideoId(const QString& id);
+
+    static QString getVideoIdByRawLink(const QUrl& url);
 private:
     QWebEngineView *view  = nullptr;
     bool urlWasSetted = false;

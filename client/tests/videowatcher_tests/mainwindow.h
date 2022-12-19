@@ -17,6 +17,8 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void LoadFinished();
+
 private:
     Ui::MainWindow *ui;
     YoutubeWatcher *watcher;

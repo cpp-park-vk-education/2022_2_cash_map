@@ -104,3 +104,11 @@ PlayerState YoutubeWatcher::getState() const {
 QString YoutubeWatcher::getLinkByVideoId(const QString& id) {
     return "https://www.youtube.com/embed/" + id + "?&enablejsapi=1&html5=1&controls=0";
 }
+
+QString YoutubeWatcher::getVideoIdByRawLink(const QUrl& url) {
+    QUrlQuery query(url);
+    if (!query.hasQueryItem("v"))
+        throw std::runtime_error("Wrong video link, doesn't have 'v' query parameter");
+
+    return query.queryItemValue("v");
+}

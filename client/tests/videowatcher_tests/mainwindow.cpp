@@ -6,6 +6,7 @@
 #include <QWebEngineView>
 #include <QtWebEngineWidgets>
 #include <cassert>
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -25,12 +26,26 @@ MainWindow::MainWindow(QWidget *parent)
     wgt->layout()->addWidget(view);
     watcher = new YoutubeWatcher(view);
 
-    QString url = YoutubeWatcher::getLinkByVideoId("TE2tfavlo3E&t");
-    assert(url != "");
+    connect(view, &QWebEngineView::loadFinished, this, &MainWindow::LoadFinished);
+
+    QString raw_link = "https://www.youtube.com/watch?v=_r0vlyp33pw";
+    QString video_id = YoutubeWatcher::getVideoIdByRawLink(raw_link);
+    QString url = YoutubeWatcher::getLinkByVideoId(video_id);
+    std::cerr << url.toStdString();
 
     PlayerState initialState = watcher->getState();
     assert(initialState.playing == false);
     assert(initialState.content_url == "");
+    assert(initialState.speed == 1.0);
+    assert(initialState.timestamp == 0);
+
+    watcher->setContentPath(url);
+}
+
+void MainWindow::LoadFinished() {
+    std::cerr << "\n\nLOAD FINISHED\n\n";
+    for (size_t i = 0; i < 10000; ++i)
+        watcher->getCurrentSpeed();
 }
 
 MainWindow::~MainWindow()
