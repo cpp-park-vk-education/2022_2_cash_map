@@ -39,6 +39,7 @@ void YoutubeWatcher::setCurrentSpeed(double time) {
 
 void YoutubeWatcher::setContentPath(const QString &path) {
     urlWasSetted = true;
+    qDebug() << "Link: " << path;
     view->setUrl(QUrl(path));
 }
 
@@ -105,7 +106,9 @@ PlayerState YoutubeWatcher::getState() const {
 }
 
 QString YoutubeWatcher::getLinkByVideoId(const QString& id) {
-    return "https://www.youtube.com/embed/" + id + "?&enablejsapi=1&html5=1&controls=0";
+    return "https://www.youtube.com/embed/" + id + "?&enablejsapi=1&html5=1&controls=0&autoplay=1";
 }
 
+YoutubeWatcher::~YoutubeWatcher() {
+}
 

@@ -2,7 +2,7 @@
 
 
 WatchUpServerClient::WatchUpServerClient(QObject *parent) : QObject(parent) {
-    url = QUrl("wss://2835-46-242-13-178.eu.ngrok.io");
+    url = QUrl("wss://f8dc-46-242-13-195.eu.ngrok.io");
     webSocket = new QWebSocket();
 
     connect(webSocket, SIGNAL(connected()), this, SIGNAL(connected()));
@@ -19,7 +19,6 @@ void WatchUpServerClient::logError(QAbstractSocket::SocketError error) {
 }
 
 void WatchUpServerClient::connectToServer() {
-    qDebug() << "777";
     webSocket->open(url);
 }
 
@@ -29,6 +28,11 @@ void WatchUpServerClient::close() {
 
 void WatchUpServerClient::sendRequest(const QString &message) {
     webSocket->sendTextMessage(message);
+}
+
+QAbstractSocket::SocketState WatchUpServerClient::getSocketState() {
+    qDebug() << webSocket->state();
+    return webSocket->state();
 }
 
 WatchUpServerClient::~WatchUpServerClient() {

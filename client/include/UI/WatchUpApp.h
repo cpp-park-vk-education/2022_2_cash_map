@@ -24,6 +24,17 @@ public slots:
 
     void enterRoom();
 
+    void closeRoom();
+
+    void showNewRoomWidget(const QString &);
+    void showExistingingRoomWidget(const QList<RoomMember *> members);
+
+    void showFailureWindow();
+
+    void searchVideoByLink();
+signals:
+    void logout();
+
 private:
     Ui::WatchUpApp *ui;
     RoomWidget *roomWidget;

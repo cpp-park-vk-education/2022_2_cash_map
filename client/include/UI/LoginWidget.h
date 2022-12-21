@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "include/domain/interface/AuthorizationManager.h"
+#include "include/domain/AppAutorizationManager.h"
 
 namespace Ui {
 class StartWidget;
@@ -14,18 +14,20 @@ class StartWidget : public QWidget
     Q_OBJECT
 
 public:
-    StartWidget(AuthorizationManager *authManager, QWidget *parent = nullptr);
+    StartWidget(AppAuthorizationManager *authManager, QWidget *parent = nullptr);
     ~StartWidget();
 
 signals:
     void authorized();
+    void registerSignal();
 
 private Q_SLOTS:
+    void getAuthStatus(AuthenticationStatus);
     void authTry();
 
 private:
     Ui::StartWidget *ui;
-    AuthorizationManager *authManager;
+    AppAuthorizationManager *authManager;
 };
 
 #endif // STARTWIDGET_H

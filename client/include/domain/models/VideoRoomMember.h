@@ -7,7 +7,7 @@
 
 class VideoRoomMember : public RoomMember {
 public:
-    VideoRoomMember(const QString &username);
+    VideoRoomMember(const QString &username, const QString &id);
     ~VideoRoomMember() = default;
     VideoRoomMember(VideoRoomMember &member) = default;
     VideoRoomMember(VideoRoomMember &&member) = default;
@@ -16,8 +16,11 @@ public:
 
     virtual QString getUsername() override;
 
+    virtual QString getUserId() override;
+
 private:
     QString username;
+    QString id;
 };
 
 

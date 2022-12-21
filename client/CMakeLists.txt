@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.5)
 project(WatchUpApp VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-#SET(C:/Qt/6.2.4/msvc2019_64 C:/Qt)
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -22,12 +22,12 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS static/ui)
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE HEADERS "include/*.h")
-MESSAGE(SOURCES)
 
-add_library(WatchUpApp_lib STATIC ${HEADERS} ${SOURCES} ${UI})
+
+add_library(WatchUpApp_lib STATIC ${HEADERS} ${SOURCES} ${UI} )
 
 add_executable(WatchUpApp
-    "main.cpp"
+    "main.cpp" "./static/resources.qrc"
 )
 
 target_link_libraries(WatchUpApp PRIVATE WatchUpApp_lib)

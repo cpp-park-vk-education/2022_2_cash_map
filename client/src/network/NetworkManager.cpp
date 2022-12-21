@@ -8,24 +8,24 @@ NetworkManager::NetworkManager(QObject *parent) : QObject(parent),
                                                   client(new WatchUpServerClient()) {
 
     client->connectToServer();
-    qDebug() << "????";
     connect(client, SIGNAL(connected()), this, SIGNAL(sessionStarted()));
     connect(client, SIGNAL(disconnected()), this, SIGNAL(sessionInterrupted()));
     connect(client, SIGNAL(onResponseReceived(const QString &)), this, SLOT(handleResponse(const QString &)));
 }
 
 
-void NetworkManager::sendCreateRoomRequest() {
-    QString request = "{\"type\": \"create\"}";
-    qDebug() << "sent";
+void NetworkManager::sendCreateRoomRequest(const QString &videoId) {
+    QString request = "{\"type\": \"create\", \"src\": \"" + videoId + "\"}";
     client->sendRequest(request);
 }
+
 void NetworkManager::sendLeaveRoomRequest() {
     QString request = "{\"type\": \"leave\"}";
     client->sendRequest(request);
 }
+
 void NetworkManager::sendJoinRoomRequest(const QString &roomID) {
-    QString request = "{\"type\": \"join\", \"rood_id\": \"" + roomID + "\"}";
+    QString request = "{\"type\": \"join\", \"room_id\": \"" + roomID + "\"}";
     client->sendRequest(request);
 }
 
@@ -51,31 +51,56 @@ void NetworkManager::sendRewindRequest(int timeStamp) {
     client->sendRequest(request);
 }
 
+void NetworkManager::sendAuthRequest(const QString &login, const QString &password) {
+    QString request = "{\"type\": \"login\", \"login\": \"" + login + "\", \"password\": \"" + password + "\"}";
+    client->sendRequest(request);
+}
+
+void NetworkManager::sendRegistrationRequest(const QString &login, const QString &userName, const QString &password) {
+    QString request = "{\"type\": \"reg\", \"login\": \"" + login + "\", \"nick\": \"" + userName + "\", \"password\": \"" + password + "\"}";
+    client->sendRequest(request);
+}
+
+void NetworkManager::sendLogoutRequest() {
+    QString request = "{\"type\": \"logout\"}";
+    client->sendRequest(request);
+}
+
 void NetworkManager::handleResponse(const QString &message) {
     // обращаемся к сериалайзеру
-    QString json_string;
-    QByteArray json_bytes = json_string.toLocal8Bit();
+    QByteArray json_bytes = message.toLocal8Bit();
     auto json_doc = QJsonDocument::fromJson(json_bytes);
 
     QJsonObject obj = json_doc.object();
     qDebug() << "[LOGGER] " << message << '\n';
     QVariantMap map = obj.toVariantMap();
+
     if (map["type"] == "create") {
         emit createSignal(map);
     } else if (map["type"] == "leave"){
         emit leaveSignal(map);
     } else if (map["type"] == "join") {
         emit joinSignal(map);
-    } else if (map["type"] == "play") {
+    } else if (map["type"] == "incomer") {
+        emit newMemberSignal(map);
+    }else if (map["type"] == "play") {
         emit playSignal(map);
     } else if (map["type"] == "pause") {
         emit pauseSignal(map);
     } else if (map["type"] == "s_src") {
         emit contentChangedSignal(map);
+    } else if (map["type"] == "login") {
+        emit authStatusSignal(map);
+    } else if (map["type"] == "reg") {
+        emit registrationStatusSignal(map);
     }
 }
 
-void NetworkManager::parseResponse() {}
+void NetworkManager::recovery() {
+    qDebug() << "checking state: ";
+    qDebug() << client->getSocketState();
+    client->connectToServer();
+}
 
 NetworkManager::~NetworkManager() {
     delete client;

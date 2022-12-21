@@ -38,7 +38,6 @@
       <font>
        <family>Times New Roman</family>
        <pointsize>16</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -46,10 +45,10 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap>../icons/Loading_icon.gif</pixmap>
+      <pixmap>../icons/loading.gif</pixmap>
      </property>
      <property name="scaledContents">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

@@ -1,21 +1,53 @@
 #ifndef APPUSER_H
 #define APPUSER_H
 
-#include "include/domain/models/interface/User.h"
+#include <QString>
 
 
-class AppUser : public User {
-public:
-    AppUser(std::string username);
-    ~AppUser() = default;
-    AppUser(AppUser &user) = default;
-    AppUser(AppUser &&user) = default;
-    AppUser &operator=(AppUser &user) = default;
-    AppUser &operator=(AppUser &&user) = default;
-
-    virtual std::string userName() override;
+class User  {
 private:
-    std::string username;
+    static User *instance;
+    User() = default;
+    User(User &user) = delete;
+    User(User &&user) = delete;
+    User &operator=(User &user) = delete;
+    User &operator=(User &&user) = delete;
+public:
+    ~User() = default;
+
+    static User *getInstance() {
+        if (!instance) {
+            instance = new User();
+        }
+        return instance;
+    };
+
+    static void setUserInfo(const QString &username, const QString &login, const QString &password) {
+        if (instance) {
+            instance->username = username;
+            instance->login = login;
+            instance->password = password;
+        } else {
+            throw "User isn't initialized.";
+        }
+    };
+
+    void clear();
+
+    bool initialized();
+
+    QString getUserName();
+
+    QString getLogin();
+
+    QString getPassword();
+    void setInstance(User *newInstance);
+
+
+private:
+    QString username;
+    QString login;
+    QString password;
 };
 
 

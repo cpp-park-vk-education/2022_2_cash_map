@@ -14,8 +14,15 @@ class RoomWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit RoomWidget(QWidget *parent = nullptr);
+    explicit RoomWidget(const QString &roomId, const QList<RoomMember *> members, QWidget *parent = nullptr);
     ~RoomWidget();
+public slots:
+    void leaveRoom();
+    void changeVideo(const QString &newUrl);
+    void copyRoomId();
+    void updateMembersList();
+signals:
+    void leaved();
 
 private:
     Ui::RoomWidget *ui;

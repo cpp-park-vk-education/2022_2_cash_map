@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/resources">
+        <file>icons/youtube_icon.png</file>
+        <file>icons/loading.gif</file>
+        <file>icons/green point.png</file>
+    </qresource>
+</RCC>

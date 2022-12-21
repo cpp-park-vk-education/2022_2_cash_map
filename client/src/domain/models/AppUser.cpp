@@ -1,9 +1,30 @@
 #include "include/domain/models/AppUser.h"
 
+User *User::instance = nullptr;
 
 
-AppUser::AppUser(std::string username) : username(username) {};
+void User::clear() {
+    username = "";
+    login = "";
+    password = "";
+}
 
-std::string AppUser::userName() {
+bool User::initialized() {
+    if (login == "" && password == "" && username == "") {
+        return false;
+    }
+    return true;
+}
+
+QString User::getUserName() {
     return username;
+}
+
+
+QString User::getPassword() {
+    return password;
+}
+
+QString User::getLogin() {
+    return login;
 }

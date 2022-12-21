@@ -2,7 +2,7 @@
 #include "qcoreevent.h"
 
 CustomWebView::CustomWebView(QWidget *parent) : QWebEngineView(parent), childObj(nullptr) {
-
+    qDebug() << "webEngine started";
 }
 
 bool CustomWebView::event(QEvent* event) {
@@ -20,18 +20,27 @@ bool CustomWebView::event(QEvent* event) {
 }
 
 bool CustomWebView::eventFilter(QObject *obj, QEvent *ev) {
-    if (obj == childObj && (ev->type() == QEvent::MouseButtonPress || ev->type() == QEvent::MouseButtonDblClick
-                            || ev->type() == QEvent::KeyPress)) {
+    // qDebug() << ev->type();
+    if (obj == childObj && ev->type() == QEvent::MouseButtonPress) {
+        qDebug() << ev->type();
+        bool result =  QWebEngineView::eventFilter(obj, ev);
+        emit playerStateMightChanged();
+        return result;
+    } else if (obj == childObj && ev->type() == QEvent::KeyPress) {
+        qDebug() << ev->type();
+        bool result =  QWebEngineView::eventFilter(obj, ev);
+        emit playerStateMightChanged();
+        return result;
+    } else if (obj == childObj && ev->type() == QEvent::InputMethodQuery) {
         qDebug() << ev->type();
         bool result =  QWebEngineView::eventFilter(obj, ev);
         emit playerStateMightChanged();
         return result;
     }
+
     return QWebEngineView::eventFilter(obj, ev);
 
 }
 
 
-CustomWebView::~CustomWebView() {
-    delete childObj;
-}
+CustomWebView::~CustomWebView() {}

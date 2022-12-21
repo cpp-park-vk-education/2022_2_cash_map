@@ -15,6 +15,7 @@ struct PlayerState {
 
 class IVideoWatcher {
  public:
+//    virtual ~IVideoWatcher();
     /// @brief Переключает режимы PLAY / PAUSE видео
     virtual void togglePlay() = 0;
     /// @brief Устанавливает время плеера
@@ -49,6 +50,7 @@ class IVideoWatcher {
 class YoutubeWatcher : IVideoWatcher {
 public:
     YoutubeWatcher(CustomWebView *_view);
+    ~YoutubeWatcher();
     /// @brief Переключает режимы PLAY / PAUSE видео
     virtual void togglePlay() override;
     /// @brief Устанавливает время плеера
@@ -84,8 +86,8 @@ public:
     static QString getLinkByVideoId(const QString& id);
 
 private:
-    CustomWebView *view;
     bool urlWasSetted = false;
+    CustomWebView *view;
 };
 
 

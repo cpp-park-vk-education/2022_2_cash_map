@@ -23,7 +23,8 @@ public:
     }
     ~NetworkManager();
 
-    void sendCreateRoomRequest();
+
+    void sendCreateRoomRequest(const QString &videoId);
     void sendLeaveRoomRequest();
     void sendJoinRoomRequest(const QString &roomID);
     void sendPlayRequest();
@@ -31,9 +32,12 @@ public:
     void sendContentChangedRequest(const QString &url);
     void sendRewindRequest(int timeStamp);
 
-    void parseResponse();
+    void sendAuthRequest(const QString &login, const QString &password);
+    void sendRegistrationRequest(const QString &login, const QString &userName, const QString &password);
+    void sendLogoutRequest();
 public slots:
     void handleResponse(const QString &message);
+    void recovery();
 signals:
     void sessionStarted();
     void sessionInterrupted();
@@ -41,10 +45,13 @@ signals:
     void createSignal(const QVariantMap &);
     void leaveSignal(const QVariantMap &);
     void joinSignal(const QVariantMap &);
+    void newMemberSignal(const QVariantMap &);
     void playSignal(const QVariantMap &);
     void pauseSignal(const QVariantMap &);
     void contentChangedSignal(const QVariantMap &);
     void rewindSignal(const QVariantMap &);
+    void authStatusSignal(const QVariantMap &);
+    void registrationStatusSignal(const QVariantMap &);
 private:
     WatchUpServerClient *client;
 };

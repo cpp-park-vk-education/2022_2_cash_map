@@ -7,19 +7,76 @@
 
 Base::Base(QWidget *parent) : QMainWindow(parent),
                               ui(new Ui::Base),
-                              authManager(createAuthorizationManager()),
-                              networkManager(NetworkManager::getInstance()) {
+                              networkManager(NetworkManager::getInstance()),
+                              user(User::getInstance()) {
+
+    authManager = createAuthorizationManager();
+
+    registerWidget = new RegisterWidget(authManager);
     loginWidget = new StartWidget(authManager);
     loadWidget = new LoadingWidget();
     mainWidget = new WatchUpApp();
-    ui->setupUi(this);
-    openLoadingWidget();
 
-    connect(networkManager, SIGNAL(sessionStarted()), this, SLOT(openLoginWidget()));
+    ui->setupUi(this);
+
+    ui->mainStackedWidget->addWidget(loadWidget);
+    ui->mainStackedWidget->addWidget(registerWidget);
+    ui->mainStackedWidget->addWidget(loginWidget);
+    ui->mainStackedWidget->addWidget(mainWidget);
+
+    connect(&timer, SIGNAL(timeout()), networkManager, SLOT(recovery()));
+
+    connect(networkManager, SIGNAL(sessionStarted()), this, SLOT(processSessionStart()));
+    connect(networkManager, SIGNAL(sessionStarted()), this, SLOT(stopTimer()));
     connect(networkManager, SIGNAL(sessionInterrupted()), this, SLOT(openLoadingWidget()));
+
+    connect(mainWidget, SIGNAL(logout()), authManager, SLOT(logout()));
+    connect(authManager, SIGNAL(logoutSignal(AuthenticationStatus)), this, SLOT(processLogout(AuthenticationStatus)));
+
     connect(loginWidget, SIGNAL(authorized()), this, SLOT(openMainWidget()));
 
-//    startApp();
+    connect(loginWidget, SIGNAL(registerSignal()), this, SLOT(openRegisterWidget()));
+
+    connect(registerWidget, SIGNAL(registerFinished()), this, SLOT(openLoginWidget()));
+}
+
+void Base::processLogout(AuthenticationStatus status) {
+    if (status == AuthenticationStatus::LogoutSucceeded) {
+        ui->mainStackedWidget->setCurrentWidget(loginWidget);
+    }
+}
+
+void Base::processSessionStart() {
+    if (!user->initialized()) { // если не было еще аутентификации, то пользователь не создан
+        openRegisterWidget();
+    } else {
+        authManager->authenticateUser(user->getLogin(), user->getPassword());
+    }
+}
+
+void Base::stopTimer() {
+    timer.stop();
+}
+
+void Base::openLoadingWidget() {
+    ui->mainStackedWidget->setCurrentWidget(loadWidget);
+    timer.start(6000);
+}
+
+void Base::openRegisterWidget() {
+    ui->mainStackedWidget->setCurrentWidget(registerWidget);
+}
+
+void Base::openLoginWidget() {
+    ui->mainStackedWidget->setCurrentWidget(loginWidget);
+}
+
+void Base::openMainWidget() {
+    ui->mainStackedWidget->setCurrentWidget(mainWidget);
+}
+
+AppAuthorizationManager *Base::createAuthorizationManager() {
+    return new AppAuthorizationManager(networkManager);
 }
 
 Base::~Base() {
@@ -31,39 +88,7 @@ Base::~Base() {
     delete loginWidget;
     delete mainWidget;
     delete loadWidget;
-}
-
-void Base::openLoadingWidget() {
-    ui->mainStackedWidget->addWidget(loadWidget);
-    ui->mainStackedWidget->setCurrentWidget(loadWidget);
-    qDebug() << ui->mainStackedWidget->currentWidget();
-}
-
-void Base::openLoginWidget() {
-    qDebug() << mainWidget;
-    ui->mainStackedWidget->addWidget(mainWidget);
-    ui->mainStackedWidget->setCurrentWidget(mainWidget);
-}
-
-void Base::openMainWidget() {
-    ui->mainStackedWidget->addWidget(mainWidget);
-    ui->mainStackedWidget->setCurrentWidget(mainWidget);
-}
-
-//void Base::openRegistrationWidget() {}
-
-//void Base::startApp() {
-//    if (!authManager->isThereAuthorizedUser()) {
-//        ui->mainStackedWidget->addWidget(loginWidget);
-//        ui->mainStackedWidget->setCurrentWidget(loginWidget);
-//    } else {
-//        ui->mainStackedWidget->addWidget(mainWidget);
-//        ui->mainStackedWidget->setCurrentWidget(mainWidget);
-//    }
-//}
-
-AuthorizationManager *Base::createAuthorizationManager() {
-    return new AppAuthorizationManager();
+    delete user;
 }
 
 

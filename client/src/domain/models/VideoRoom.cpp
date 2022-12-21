@@ -1,7 +1,7 @@
 #include "include/domain/models/VideoRoom.h"
 
 
-VideoRoom::VideoRoom(RoomMember *host) : hostMember(host), membersList() {
+VideoRoom::VideoRoom(RoomMember *host, QString roomId) : hostMember(host), roomId(roomId), membersList() {
     membersList.push_back(host);
 };
 
@@ -29,4 +29,12 @@ std::vector<RoomMember *> VideoRoom::members() {
 
 RoomMember *VideoRoom::host() {
     return hostMember;
+}
+
+QString VideoRoom::getRoomId() {
+    return roomId;
+}
+
+VideoRoom::~VideoRoom() {
+    delete hostMember;
 }

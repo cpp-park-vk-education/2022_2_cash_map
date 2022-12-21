@@ -13,11 +13,12 @@ public:
     ~WatchUpServerClient();
 
     void connectToServer();
-    void sendRequest(const QString &message);
-    void close();
+    QAbstractSocket::SocketState getSocketState();
 
 public slots:
     void logError(QAbstractSocket::SocketError error);
+    void sendRequest(const QString &message);
+    void close();
 signals:
     void disconnected();
     void connected();

@@ -1,12 +1,14 @@
 #ifndef BASE_H
 #define BASE_H
 
+#include "include/UI/RegisterWidget.h"
 #include "include/UI/WatchUpApp.h"
-#include "include/domain/interface/AuthorizationManager.h"
 #include "LoginWidget.h"
 #include "include/network/NetworkManager.h"
 #include "include/UI/LoadingWidget.h"
 #include <QMainWindow>
+#include "include/domain/AppAutorizationManager.h"
+#include "include/domain/models/AppUser.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {class Base;}
@@ -21,21 +23,30 @@ public:
     ~Base();
 
 public slots:
+    void processLogout(AuthenticationStatus status);
+    void processSessionStart();
+    void stopTimer();
     void openMainWidget();
     void openLoginWidget();
     void openLoadingWidget();
+    void openRegisterWidget();
 
 private:
     Ui::Base *ui;
 
-    AuthorizationManager *authManager;
+    User *user;
+
+    QTimer timer;
+
+    AppAuthorizationManager *authManager;
     NetworkManager *networkManager;
 
     StartWidget *loginWidget;
+    RegisterWidget *registerWidget;
     WatchUpApp *mainWidget;
     LoadingWidget *loadWidget;
 
-    AuthorizationManager *createAuthorizationManager();
+    AppAuthorizationManager *createAuthorizationManager();
 
     void startApp();
 };

@@ -8,6 +8,8 @@ class RoomMember {
 public:
     virtual QString getUsername() = 0;
 
+    virtual QString getUserId() = 0;
+
 };
 
 #endif // ROOMMEMBER_H

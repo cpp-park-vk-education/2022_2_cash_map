@@ -9,8 +9,8 @@
 
 class VideoRoom : public Room {
 public:
-    VideoRoom(RoomMember *host);
-    ~VideoRoom() = default;
+    VideoRoom(RoomMember *host, QString roomId);
+    ~VideoRoom();
     VideoRoom(VideoRoom &room) = default;
     VideoRoom(VideoRoom &&room);
     VideoRoom &operator=(VideoRoom &room) = default;
@@ -20,8 +20,11 @@ public:
 
     virtual RoomMember *host() override;
 
+    virtual QString getRoomId() override;
+
 private:
     RoomMember *hostMember;
+    QString roomId;
     std::vector<RoomMember *> membersList;
 };
 

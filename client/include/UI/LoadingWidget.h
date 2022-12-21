@@ -16,6 +16,7 @@ public:
     ~LoadingWidget();
 
 private:
+    QMovie *movie;
     Ui::LoadingWidget *ui;
 };
 
