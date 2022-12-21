@@ -1,6 +1,7 @@
 #ifndef INC_2022_2_CASH_MAP_VIDEOWATCHER_H
 #define INC_2022_2_CASH_MAP_VIDEOWATCHER_H
 
+#include <QObject>
 #include <QtWebEngineWidgets>
 
 // Означает текущее состояние плеера
@@ -11,7 +12,8 @@ struct PlayerState {
     double timestamp = 0;
 };
 
-class IVideoWatcher {
+class IVideoWatcher : public QObject {
+    Q_OBJECT
  public:
     /// @brief Переключает режимы PLAY / PAUSE видео
     virtual void togglePlay() = 0;
@@ -41,9 +43,14 @@ class IVideoWatcher {
     /// @brief Получить текущее состояние плеера
     /// @return текущее состояние плеера
     virtual PlayerState getState() const = 0;
+
+signals:
+    void ReadyToWatch(bool ok);
 };
 
-class YoutubeWatcher : IVideoWatcher {
+class YoutubeWatcher : public IVideoWatcher {
+private:
+    void handleLoading(int progress_percent);
 public:
     explicit YoutubeWatcher(QWebEngineView *_view);
     /// @brief Переключает режимы PLAY / PAUSE видео

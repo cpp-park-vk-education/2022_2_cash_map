@@ -1,6 +1,12 @@
-#include <QtWebEngineWidgets>
-
 #include "videowatcher.h"
+
+void YoutubeWatcher::handleLoading(int loaded_percent) {
+    if (loaded_percent == 100) {
+        qDebug() << "READY TO WATCH!";
+        togglePlay();
+        emit ReadyToWatch(true);
+    }
+}
 
 YoutubeWatcher::YoutubeWatcher(QWebEngineView *_view) : view(_view), urlWasSetted(false) {
     view->setWindowTitle("Watch Up Youtube player");
@@ -11,6 +17,8 @@ YoutubeWatcher::YoutubeWatcher(QWebEngineView *_view) : view(_view), urlWasSette
     view->settings()->setAttribute(QWebEngineSettings::JavascriptEnabled, true);
     view->settings()->setAttribute(QWebEngineSettings::JavascriptCanOpenWindows, true);
     view->settings()->setAttribute(QWebEngineSettings::PlaybackRequiresUserGesture, false);
+
+    QObject::connect(view, &QWebEngineView::loadProgress, this, &YoutubeWatcher::handleLoading);
 }
 
 void YoutubeWatcher::togglePlay() {
@@ -102,7 +110,7 @@ PlayerState YoutubeWatcher::getState() const {
 }
 
 QString YoutubeWatcher::getLinkByVideoId(const QString& id) {
-    return "https://www.youtube.com/embed/" + id + "?&enablejsapi=1&html5=1&controls=0";
+    return "https://www.youtube.com/embed/" + id + "?&enablejsapi=1&html5=1&controls=0&autoplay=1";
 }
 
 QString YoutubeWatcher::getVideoIdByRawLink(const QUrl& url) {
