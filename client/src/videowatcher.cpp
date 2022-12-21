@@ -3,8 +3,7 @@
 void YoutubeWatcher::handleLoading(int loaded_percent) {
     if (loaded_percent == 100) {
         qDebug() << "READY TO WATCH!";
-        togglePlay();
-        emit ReadyToWatch();
+        emit ReadyToWatch(true);
     }
 }
 
@@ -24,7 +23,7 @@ YoutubeWatcher::YoutubeWatcher(QWebEngineView *_view) : view(_view), urlWasSette
 void YoutubeWatcher::togglePlay() {
     if (!urlWasSetted)
         throw std::runtime_error("Can't operate with Youtube Watcher before setting url of video");
-    QString js = "var video = document.querySelector('video'); if (video.paused) {video.play(); document.getElementById('movie_player').playVideo();} else {video.pause();}";
+    QString js = "document.getElementsByClassName('ytp-large-play-button')[0].click();";
     view->page()->runJavaScript(js, [](const QVariant &v){ qDebug() << v.toString(); });
 }
 
@@ -110,7 +109,7 @@ PlayerState YoutubeWatcher::getState() const {
 }
 
 QString YoutubeWatcher::getLinkByVideoId(const QString& id) {
-    return "https://www.youtube.com/embed/" + id + "?&enablejsapi=1&html5=1&controls=0&autoplay=1";
+    return "https://www.youtube.com/embed/" + id + "?&enablejsapi=1&html5=1&controls=0&autoplay=0";
 }
 
 QString YoutubeWatcher::getVideoIdByRawLink(const QUrl& url) {
