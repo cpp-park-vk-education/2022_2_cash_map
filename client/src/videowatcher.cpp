@@ -4,7 +4,7 @@ void YoutubeWatcher::handleLoading(int loaded_percent) {
     if (loaded_percent == 100) {
         qDebug() << "READY TO WATCH!";
         togglePlay();
-        emit ReadyToWatch(true);
+        emit ReadyToWatch();
     }
 }
 

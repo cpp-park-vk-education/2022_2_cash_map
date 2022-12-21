@@ -45,7 +45,7 @@ class IVideoWatcher : public QObject {
     virtual PlayerState getState() const = 0;
 
 signals:
-    void ReadyToWatch(bool ok);
+    void ReadyToWatch();
 };
 
 class YoutubeWatcher : public IVideoWatcher {
