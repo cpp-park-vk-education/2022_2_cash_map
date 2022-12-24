@@ -1,7 +1,7 @@
 #include "include/domain/models/TextMessage.h"
 
 
-TextMessage::TextMessage(std::string text, int time, RoomMember *sender) : text(text), time(time), sender(sender) {};
+TextMessage::TextMessage(QString text, QString time, QString sender) : text(text), time(time), sender(sender) {};
 
 TextMessage::TextMessage(TextMessage &&message) {
     if (&message != this) {
@@ -26,14 +26,14 @@ TextMessage &TextMessage::operator=(TextMessage &&message) {
     return *this;
 };
 
-std::string TextMessage::messageContent() {
+QString TextMessage::messageContent() {
     return text;
 }
 
-int TextMessage::messageTime() {
+QString TextMessage::messageTime() {
     return time;
 };
 
-RoomMember *TextMessage::messageSender() {
+QString TextMessage::messageSender() {
     return sender;
 };

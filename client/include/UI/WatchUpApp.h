@@ -18,6 +18,8 @@ public:
     WatchUpApp(QWidget *parent = nullptr);
     ~WatchUpApp();
 
+    void reloadContext();
+
 //    SearchItemCollector *searchCollector;
 public slots:
     void openRoom();
@@ -26,8 +28,8 @@ public slots:
 
     void closeRoom();
 
-    void showNewRoomWidget(const QString &);
-    void showExistingingRoomWidget(const QList<RoomMember *> members);
+    void showNewRoomWidget(Room *);
+    void showExistingingRoomWidget(Room *);
 
     void showFailureWindow();
 

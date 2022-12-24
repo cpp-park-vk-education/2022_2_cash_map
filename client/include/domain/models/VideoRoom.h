@@ -5,27 +5,42 @@
 #include "include/domain/models/interface/Room.h"
 
 #include <QString>
+#include <QList>
 
 
 class VideoRoom : public Room {
 public:
-    VideoRoom(RoomMember *host, QString roomId);
+    VideoRoom(RoomMember *host, QString roomId, const QList<RoomMember *> &membersList, const QString &source, bool playingState);
     ~VideoRoom();
     VideoRoom(VideoRoom &room) = default;
     VideoRoom(VideoRoom &&room);
     VideoRoom &operator=(VideoRoom &room) = default;
     VideoRoom &operator=(VideoRoom &&room);
 
-    virtual std::vector<RoomMember *> members() override;
+    virtual const QList<RoomMember *> &getMembers() override;
 
-    virtual RoomMember *host() override;
+    virtual const QString &getSource() override;
 
-    virtual QString getRoomId() override;
+    virtual void setSource(const QString &source) override;
+
+    virtual bool getPlayingState() override;
+
+    virtual void setPlayingState(bool state) override;
+
+    virtual RoomMember *getHost() override;
+
+    virtual const QString &getRoomId() override;
+
+    virtual void removeMember(RoomMember *member) override;
+
+    virtual void addMember(RoomMember *member) override;
 
 private:
     RoomMember *hostMember;
     QString roomId;
-    std::vector<RoomMember *> membersList;
+    QString source;
+    QList<RoomMember *> membersList;
+    bool playingState;
 };
 
 

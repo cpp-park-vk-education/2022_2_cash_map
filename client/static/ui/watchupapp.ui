@@ -264,6 +264,16 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QLabel" name="roomCreatingStatusLabel">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>

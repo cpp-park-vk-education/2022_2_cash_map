@@ -3,18 +3,20 @@
 
 #include "include/UI/YoutubeWatcher.h"
 #include "include/domain/interface/RoomManager.h"
+#include "include/domain/models/interface/Room.h"
 #include "include/network/NetworkManager.h"
 
 
 
 class VideoRoomManager : public RoomManager {
 public:
-    VideoRoomManager(const QString &username, const QString &userId, YoutubeWatcher *watcher, const QString &roomId, const QList<RoomMember *> members);
+    VideoRoomManager(Room *room, YoutubeWatcher *watcher);
 
     ~VideoRoomManager();
 
     virtual void changeVideoContent(const QString &url) override;
 
+    virtual void reconnect() override;
 
     virtual void rewindTo(int timeStamp) override;
 
@@ -36,14 +38,15 @@ public slots:
     virtual void changeVideoContent(const QVariantMap &) override;
     virtual void startWatching(const QVariantMap &) override;
     virtual void stopWatching(const QVariantMap &) override;
-
+private:
+    QString convertTimeStampToString(int timeStamp);
+    int convertTimeStampToInt(QString timeStamp);
 private:
     PlayerState startState;
     YoutubeWatcher *watcher;
     NetworkManager *networkManager;
 
-    QList<RoomMember *> members;
-    QString roomId;
+    Room *room;
 };
 
 

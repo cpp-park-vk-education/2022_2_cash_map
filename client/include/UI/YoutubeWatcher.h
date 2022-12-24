@@ -13,9 +13,9 @@ struct PlayerState {
     double timestamp = 0;
 };
 
-class IVideoWatcher {
+class IVideoWatcher : public QObject {
+    Q_OBJECT
  public:
-//    virtual ~IVideoWatcher();
     /// @brief Переключает режимы PLAY / PAUSE видео
     virtual void togglePlay() = 0;
     /// @brief Устанавливает время плеера
@@ -44,13 +44,17 @@ class IVideoWatcher {
     /// @brief Получить текущее состояние плеера
     /// @return текущее состояние плеера
     virtual PlayerState getState() const = 0;
+
+signals:
+    void ReadyToWatch(bool ok);
 };
 
-
-class YoutubeWatcher : IVideoWatcher {
+class YoutubeWatcher : public IVideoWatcher {
+private:
+    void handleLoading(int progress_percent);
 public:
-    YoutubeWatcher(CustomWebView *_view);
-    ~YoutubeWatcher();
+    explicit YoutubeWatcher(CustomWebView *_view);
+    ~YoutubeWatcher() = default;
     /// @brief Переключает режимы PLAY / PAUSE видео
     virtual void togglePlay() override;
     /// @brief Устанавливает время плеера
@@ -84,6 +88,8 @@ public:
     /// @param id id ютубовского видео
     /// @return возвращает готовую ссылку, которую можно передавать в setContentPath
     static QString getLinkByVideoId(const QString& id);
+
+    static QString getVideoIdByRawLink(const QUrl& url);
 
 private:
     bool urlWasSetted = false;

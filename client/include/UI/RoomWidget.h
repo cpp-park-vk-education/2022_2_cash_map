@@ -3,7 +3,9 @@
 
 #include <QWidget>
 #include "include/UI/YoutubeWatcher.h"
+#include "include/domain/interface/ChatManager.h"
 #include "include/domain/interface/RoomManager.h"
+#include "include/domain/models/interface/Room.h"
 
 namespace Ui {
 class RoomWidget;
@@ -14,9 +16,13 @@ class RoomWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit RoomWidget(const QString &roomId, const QList<RoomMember *> members, QWidget *parent = nullptr);
+    explicit RoomWidget(Room *room, QWidget *parent = nullptr);
     ~RoomWidget();
+
+    void rejoin();
 public slots:
+    void updateChat(Message*);
+    void sendMessage();
     void leaveRoom();
     void changeVideo(const QString &newUrl);
     void copyRoomId();
@@ -27,6 +33,7 @@ signals:
 private:
     Ui::RoomWidget *ui;
     RoomManager *manager;
+    ChatManager *chatManager;
 
     YoutubeWatcher *watcher;
     CustomWebView *webView;

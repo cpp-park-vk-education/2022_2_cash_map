@@ -11,6 +11,8 @@ class RoomManager : public QObject {
 public:
 //    virtual ~RoomManager();
 
+    virtual void reconnect() = 0;
+
     virtual void changeVideoContent(const QString &url) = 0;
 
     virtual void rewindTo(int timeStamp) = 0;

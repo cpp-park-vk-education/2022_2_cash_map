@@ -8,11 +8,23 @@
 
 class Room {
 public:
-    virtual std::vector<RoomMember *> members() = 0;
+    virtual const QList<RoomMember *> &getMembers() = 0;
 
-    virtual RoomMember *host() = 0;
+    virtual RoomMember *getHost() = 0;
 
-    virtual QString getRoomId() = 0;
+    virtual const QString &getRoomId() = 0;
+
+    virtual const QString &getSource() = 0;
+
+    virtual bool getPlayingState() = 0;
+
+    virtual void setPlayingState(bool state) = 0;
+
+    virtual void setSource(const QString &source) = 0;
+
+    virtual void removeMember(RoomMember *member) = 0;
+
+    virtual void addMember(RoomMember *member) = 0;
 };
 
 #endif // ROOM_H

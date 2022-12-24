@@ -15,11 +15,17 @@ WatchUpApp::WatchUpApp(QWidget *parent) : QMainWindow(parent),
     connect(ui->createRoomButton, SIGNAL(clicked()), this, SLOT(openRoom()));
     connect(ui->joinButton, SIGNAL(clicked()), this, SLOT(enterRoom()));
 
-    connect(manager, SIGNAL(succesfullyOpenedRoom(const QString &)), this, SLOT(showNewRoomWidget(const QString &)));
-    connect(manager, SIGNAL(succesfullyJoinedRoom(const QList<RoomMember *>)), this, SLOT(showExistingingRoomWidget(const QList<RoomMember *>)));
+    connect(manager, SIGNAL(succesfullyOpenedRoom(Room *)), this, SLOT(showNewRoomWidget(Room *)));
+    connect(manager, SIGNAL(succesfullyJoinedRoom(Room *)), this, SLOT(showExistingingRoomWidget(Room *)));
     connect(manager, SIGNAL(failedOpeningRoom()), this, SLOT(showFailureWindow()));
 
     connect(ui->searchButton, SIGNAL(clicked()), this, SLOT(searchVideoByLink()));
+}
+
+void WatchUpApp::reloadContext() {
+    if (roomWidget != nullptr) {
+        roomWidget->rejoin();
+    }
 }
 
 void WatchUpApp::closeRoom() {
@@ -40,30 +46,38 @@ void WatchUpApp::enterRoom() {
     manager->joinRoom(roomId);
 }
 
-void WatchUpApp::showExistingingRoomWidget(const QList<RoomMember *> members) {
-    QString roomId = ui->joinLineEdit->text();
-    roomWidget = new RoomWidget(roomId, members);
+void WatchUpApp::showExistingingRoomWidget(Room *room) {
+    ui->roomCreatingStatusLabel->clear();
+    if (roomWidget != nullptr) { // при реконнекте объект комнаты надо пересоздать
+        delete roomWidget;
+        roomWidget = nullptr;
+    }
+    roomWidget = new RoomWidget(room);
     connect(roomWidget, SIGNAL(leaved()), this, SLOT(closeRoom()));
 
     ui->stackedWidget->addWidget(roomWidget);
     ui->stackedWidget->setCurrentWidget(roomWidget);
 }
 
-void WatchUpApp::showNewRoomWidget(const QString &roomId) {
-    roomWidget = new RoomWidget(roomId, QList<RoomMember *>());
+void WatchUpApp::showNewRoomWidget(Room *room) {
+    ui->roomCreatingStatusLabel->clear();
+    roomWidget = new RoomWidget(room);
     connect(roomWidget, SIGNAL(leaved()), this, SLOT(closeRoom()));
 
+    qDebug() << room->getMembers()[0]->getUsername();
     ui->stackedWidget->addWidget(roomWidget);
     ui->stackedWidget->setCurrentWidget(roomWidget);
 }
 
 void WatchUpApp::showFailureWindow() {
-    qDebug() << "Failed opening";
+    ui->roomCreatingStatusLabel->setText("Failed to open room");
 }
 
 void WatchUpApp::searchVideoByLink() {
     QString newUrl = ui->searchLineEdit->text();
-    roomWidget->changeVideo(newUrl);
+    if (roomWidget != nullptr) {
+        roomWidget->changeVideo(newUrl);
+    }
 }
 
 

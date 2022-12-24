@@ -28,13 +28,15 @@ public:
     void sendLeaveRoomRequest();
     void sendJoinRoomRequest(const QString &roomID);
     void sendPlayRequest();
-    void sendPauseRequest(int timeStamp);
+    void sendPauseRequest(QString timeStamp);
     void sendContentChangedRequest(const QString &url);
-    void sendRewindRequest(int timeStamp);
-
+    void sendRewindRequest(QString timeStamp);
+    void sendInvalidRequest();
     void sendAuthRequest(const QString &login, const QString &password);
     void sendRegistrationRequest(const QString &login, const QString &userName, const QString &password);
     void sendLogoutRequest();
+
+    void sendMessageRequest(const QString &content);
 public slots:
     void handleResponse(const QString &message);
     void recovery();
@@ -52,6 +54,9 @@ signals:
     void rewindSignal(const QVariantMap &);
     void authStatusSignal(const QVariantMap &);
     void registrationStatusSignal(const QVariantMap &);
+    void logoutSignal(const QVariantMap &);
+    void newMessageSignal(const QVariantMap &);
+    void invalid();
 private:
     WatchUpServerClient *client;
 };

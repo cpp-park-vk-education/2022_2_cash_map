@@ -7,13 +7,13 @@
 class User  {
 private:
     static User *instance;
-    User() = default;
+    User() : username(nullptr), login(nullptr), password(nullptr) {};
     User(User &user) = delete;
     User(User &&user) = delete;
     User &operator=(User &user) = delete;
     User &operator=(User &&user) = delete;
 public:
-    ~User() = default;
+    ~User();
 
     static User *getInstance() {
         if (!instance) {
@@ -24,9 +24,9 @@ public:
 
     static void setUserInfo(const QString &username, const QString &login, const QString &password) {
         if (instance) {
-            instance->username = username;
-            instance->login = login;
-            instance->password = password;
+            instance->username = new QString(username);
+            instance->login = new QString(login);
+            instance->password = new QString(password);
         } else {
             throw "User isn't initialized.";
         }
@@ -41,13 +41,12 @@ public:
     QString getLogin();
 
     QString getPassword();
-    void setInstance(User *newInstance);
 
 
 private:
-    QString username;
-    QString login;
-    QString password;
+    QString *username;
+    QString *login;
+    QString *password;
 };
 
 

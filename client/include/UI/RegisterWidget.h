@@ -5,7 +5,7 @@
 #include <QWidget>
 
 namespace Ui {
-class RegisterWindget;
+class RegisterWidget;
 }
 
 class RegisterWidget : public QWidget
@@ -23,7 +23,7 @@ signals:
     void registerFinished();
 
 private:
-    Ui::RegisterWindget *ui;
+    Ui::RegisterWidget *ui;
 
     AppAuthorizationManager *authManager;
 };

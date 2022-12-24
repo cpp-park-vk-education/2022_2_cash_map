@@ -3,7 +3,7 @@
 
 
 RegisterWidget::RegisterWidget(AppAuthorizationManager *authManager, QWidget *parent) : QWidget(parent),
-                                                                                        ui(new Ui::RegisterWindget),
+                                                                                        ui(new Ui::RegisterWidget),
                                                                                         authManager(authManager) {
     ui->setupUi(this);
     connect(ui->registerButton, SIGNAL(clicked()), this, SLOT(registerUser()));

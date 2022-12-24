@@ -7,11 +7,11 @@
 
 class Message {
 public:
-    virtual std::string messageContent() = 0;
+    virtual QString messageContent() = 0;
 
-    virtual int messageTime() = 0;
+    virtual QString messageTime() = 0;
 
-    virtual RoomMember *messageSender() = 0;
+    virtual QString messageSender() = 0;
 
 };
 

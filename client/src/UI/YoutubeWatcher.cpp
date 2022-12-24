@@ -1,9 +1,13 @@
-#include "include/UI/CustomWebView.h"
 #include <QtWebEngineWidgets>
+#include "include/UI/YoutubeWatcher.h"
 
-#include <include/UI/YoutubeWatcher.h>
 
-
+void YoutubeWatcher::handleLoading(int loaded_percent) {
+    if (loaded_percent == 100) {
+        qDebug() << "READY TO WATCH!";
+        emit ReadyToWatch(true);
+    }
+}
 
 YoutubeWatcher::YoutubeWatcher(CustomWebView *_view) : view(_view), urlWasSetted(false) {
     view->setWindowTitle("Watch Up Youtube player");
@@ -14,12 +18,14 @@ YoutubeWatcher::YoutubeWatcher(CustomWebView *_view) : view(_view), urlWasSetted
     view->settings()->setAttribute(QWebEngineSettings::JavascriptEnabled, true);
     view->settings()->setAttribute(QWebEngineSettings::JavascriptCanOpenWindows, true);
     view->settings()->setAttribute(QWebEngineSettings::PlaybackRequiresUserGesture, false);
+
+    QObject::connect(view, &QWebEngineView::loadProgress, this, &YoutubeWatcher::handleLoading);
 }
 
 void YoutubeWatcher::togglePlay() {
     if (!urlWasSetted)
         throw std::runtime_error("Can't operate with Youtube Watcher before setting url of video");
-    QString js = "var video = document.querySelector('video'); if (video.paused) {video.play(); document.getElementById('movie_player').playVideo();} else {video.pause();}";
+    QString js = "document.getElementsByClassName('ytp-large-play-button')[0].click();";
     view->page()->runJavaScript(js, [](const QVariant &v){ qDebug() << v.toString(); });
 }
 
@@ -39,7 +45,6 @@ void YoutubeWatcher::setCurrentSpeed(double time) {
 
 void YoutubeWatcher::setContentPath(const QString &path) {
     urlWasSetted = true;
-    qDebug() << "Link: " << path;
     view->setUrl(QUrl(path));
 }
 
@@ -106,9 +111,13 @@ PlayerState YoutubeWatcher::getState() const {
 }
 
 QString YoutubeWatcher::getLinkByVideoId(const QString& id) {
-    return "https://www.youtube.com/embed/" + id + "?&enablejsapi=1&html5=1&controls=0&autoplay=1";
+    return "https://www.youtube.com/embed/" + id + "?&enablejsapi=1&html5=1&controls=2&autoplay=0";
 }
 
-YoutubeWatcher::~YoutubeWatcher() {
-}
+QString YoutubeWatcher::getVideoIdByRawLink(const QUrl& url) {
+    QUrlQuery query(url);
+    if (!query.hasQueryItem("v"))
+        throw std::runtime_error("Wrong video link, doesn't have 'v' query parameter");
 
+    return query.queryItemValue("v");
+}

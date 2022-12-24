@@ -31,11 +31,6 @@ bool CustomWebView::eventFilter(QObject *obj, QEvent *ev) {
         bool result =  QWebEngineView::eventFilter(obj, ev);
         emit playerStateMightChanged();
         return result;
-    } else if (obj == childObj && ev->type() == QEvent::InputMethodQuery) {
-        qDebug() << ev->type();
-        bool result =  QWebEngineView::eventFilter(obj, ev);
-        emit playerStateMightChanged();
-        return result;
     }
 
     return QWebEngineView::eventFilter(obj, ev);

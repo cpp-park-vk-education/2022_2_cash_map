@@ -6,23 +6,23 @@
 
 class TextMessage : public Message {
 public:
-    TextMessage(std::string text, int time, RoomMember *sender);
+    TextMessage(QString text, QString time, QString sender);
     ~TextMessage() = default;
     TextMessage(TextMessage &message) = default;
     TextMessage(TextMessage &&message);
     TextMessage &operator=(TextMessage &message) = default;
     TextMessage &operator=(TextMessage &&message);
 
-    virtual std::string messageContent() override;
+    virtual QString messageContent() override;
 
-    virtual int messageTime() override;
+    virtual QString messageTime() override;
 
-    virtual RoomMember *messageSender() override;
+    virtual QString messageSender() override;
 
 private:
-    std::string text;
-    int time;
-    RoomMember *sender;
+    QString text;
+    QString time;
+    QString sender;
 };
 
 

@@ -34,9 +34,8 @@ void NetworkManager::sendPlayRequest() {
     client->sendRequest(request);
 }
 
-void NetworkManager::sendPauseRequest(int timeStamp) {
-    QString stringed = QString(std::to_string(timeStamp).c_str());
-    QString request = "{\"type\": \"pause\", \"time\": \"" + stringed + "\"}";
+void NetworkManager::sendPauseRequest(QString timeStamp) {
+    QString request = "{\"type\": \"pause\", \"time\": \"" + timeStamp + "\"}";
     client->sendRequest(request);
 }
 
@@ -45,9 +44,8 @@ void NetworkManager::sendContentChangedRequest(const QString &url) {
     client->sendRequest(request);
 }
 
-void NetworkManager::sendRewindRequest(int timeStamp) {
-    QString stringed = QString(std::to_string(timeStamp).c_str());
-    QString request = "{\"type\": \"s_time\", \"time\": \"" + stringed + "\"}";
+void NetworkManager::sendRewindRequest(QString timeStamp) {
+    QString request = "{\"type\": \"s_time\", \"time\": \"" + timeStamp + "\"}";
     client->sendRequest(request);
 }
 
@@ -66,15 +64,24 @@ void NetworkManager::sendLogoutRequest() {
     client->sendRequest(request);
 }
 
+void NetworkManager::sendMessageRequest(const QString &content) {
+    QString request = "{\"type\": \"chat\", \"msg\": \"" + content + "\"}";
+    client->sendRequest(request);
+}
+
+void NetworkManager::sendInvalidRequest() {
+    QString request = "{\"type\": \"invalid\"}";
+    client->sendRequest(request);
+}
+
 void NetworkManager::handleResponse(const QString &message) {
     // обращаемся к сериалайзеру
-    QByteArray json_bytes = message.toLocal8Bit();
+    QByteArray json_bytes = message.toUtf8();
     auto json_doc = QJsonDocument::fromJson(json_bytes);
 
     QJsonObject obj = json_doc.object();
     qDebug() << "[LOGGER] " << message << '\n';
     QVariantMap map = obj.toVariantMap();
-
     if (map["type"] == "create") {
         emit createSignal(map);
     } else if (map["type"] == "leave"){
@@ -93,11 +100,19 @@ void NetworkManager::handleResponse(const QString &message) {
         emit authStatusSignal(map);
     } else if (map["type"] == "reg") {
         emit registrationStatusSignal(map);
+    } else if (map["type"] == "logout") {
+        qDebug() << "LOGOUT";
+        emit logoutSignal(map);
+    } else if (map["type"] == "s_time") {
+        emit rewindSignal(map);
+    } else if (map["type"] == "chat") {
+        emit newMessageSignal(map);
+    } else if (map["type"] == "invalid") {
+        emit invalid();
     }
 }
 
 void NetworkManager::recovery() {
-    qDebug() << "checking state: ";
     qDebug() << client->getSocketState();
     client->connectToServer();
 }

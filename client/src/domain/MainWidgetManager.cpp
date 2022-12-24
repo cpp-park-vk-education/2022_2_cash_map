@@ -1,7 +1,10 @@
 #include "include/domain/MainWidgetManager.h"
 
-#include <include/domain/models/VideoRoomMember.h>
+#include "include/domain/models/VideoRoom.h"
 
+#include "include/domain/models/VideoRoomMember.h"
+
+#include <include/domain/models/AppUser.h>
 
 MainWidgetManager::MainWidgetManager(QObject *parent) : QObject(parent){
     networkManager = NetworkManager::getInstance();
@@ -12,31 +15,42 @@ MainWidgetManager::MainWidgetManager(QObject *parent) : QObject(parent){
 
 
 void MainWidgetManager::manageResponse(const QVariantMap &response) {
-    if (response["type"].toString() == "join" /*&& response["code"].toString() == "200"*/) {
-        QList<RoomMember *> members;
-        for (auto viewerInfo : response["viewers"].toList()) {
-            RoomMember *member = new VideoRoomMember(viewerInfo.toMap()["nick"].toString(), viewerInfo.toMap()["id"].toString());
-            members.push_back(member);
-        }
-        emit succesfullyJoinedRoom(members);
+    if (response["type"].toString() == "join" && response["code"].toString() == "200") {
+        emit succesfullyJoinedRoom(createRoomObject(response));
     } else if (response["type"].toString() == "join") { //&& response["code"] == "400" {
         emit failedOpeningRoom();
     }
 
     if (response["type"].toString() == "create" && response["code"].toString() == "200") {
-        emit succesfullyOpenedRoom(response["room_id"].toString());
+        emit succesfullyOpenedRoom(createRoomObject(response));
     } else if (response["type"].toString() == "create") {
         emit failedOpeningRoom();
     }
+}
+
+Room *MainWidgetManager::createRoomObject(const QVariantMap &response) {
+    QList<RoomMember *> members;
+    for (auto viewerInfo : response["viewers"].toList()) {
+        RoomMember *member = new VideoRoomMember(viewerInfo.toMap()["nick"].toString(), viewerInfo.toMap()["id"].toString());
+        members.push_back(member);
+    }
+    Room *room = new VideoRoom(new VideoRoomMember(User::getInstance()->getUserName(),
+                                                   User::getInstance()->getLogin()),
+                                                   response["room_id"].toString(),
+                                                   members, response["src"].toString(),
+                                                   response["state"].toBool());
+    return room;
 }
 
 
 void MainWidgetManager::createRoom(const QString &videoId) {
     networkManager->sendCreateRoomRequest(videoId);
 }
+
 void MainWidgetManager::joinRoom(const QString &roomId) {
     networkManager->sendJoinRoomRequest(roomId);
 }
+
 void MainWidgetManager::leaveRoom() {
     networkManager->sendLeaveRoomRequest();
 }

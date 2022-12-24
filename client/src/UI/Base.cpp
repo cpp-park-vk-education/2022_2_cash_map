@@ -7,8 +7,10 @@
 
 Base::Base(QWidget *parent) : QMainWindow(parent),
                               ui(new Ui::Base),
-                              networkManager(NetworkManager::getInstance()),
-                              user(User::getInstance()) {
+                              user(User::getInstance()),
+                              networkManager(NetworkManager::getInstance()) {
+
+    ui->setupUi(this);
 
     authManager = createAuthorizationManager();
 
@@ -16,8 +18,6 @@ Base::Base(QWidget *parent) : QMainWindow(parent),
     loginWidget = new StartWidget(authManager);
     loadWidget = new LoadingWidget();
     mainWidget = new WatchUpApp();
-
-    ui->setupUi(this);
 
     ui->mainStackedWidget->addWidget(loadWidget);
     ui->mainStackedWidget->addWidget(registerWidget);
@@ -31,6 +31,7 @@ Base::Base(QWidget *parent) : QMainWindow(parent),
     connect(networkManager, SIGNAL(sessionInterrupted()), this, SLOT(openLoadingWidget()));
 
     connect(mainWidget, SIGNAL(logout()), authManager, SLOT(logout()));
+
     connect(authManager, SIGNAL(logoutSignal(AuthenticationStatus)), this, SLOT(processLogout(AuthenticationStatus)));
 
     connect(loginWidget, SIGNAL(authorized()), this, SLOT(openMainWidget()));
@@ -40,15 +41,19 @@ Base::Base(QWidget *parent) : QMainWindow(parent),
     connect(registerWidget, SIGNAL(registerFinished()), this, SLOT(openLoginWidget()));
 }
 
+
 void Base::processLogout(AuthenticationStatus status) {
-    if (status == AuthenticationStatus::LogoutSucceeded) {
-        ui->mainStackedWidget->setCurrentWidget(loginWidget);
-    }
+//    if (status == AuthenticationStatus::LogoutSucceeded) {
+//        user->clear();
+//        ui->mainStackedWidget->setCurrentWidget(loginWidget);
+//    }
+    user->clear();
+    ui->mainStackedWidget->setCurrentWidget(loginWidget);
 }
 
 void Base::processSessionStart() {
     if (!user->initialized()) { // если не было еще аутентификации, то пользователь не создан
-        openRegisterWidget();
+        openLoginWidget();
     } else {
         authManager->authenticateUser(user->getLogin(), user->getPassword());
     }
@@ -73,6 +78,7 @@ void Base::openLoginWidget() {
 
 void Base::openMainWidget() {
     ui->mainStackedWidget->setCurrentWidget(mainWidget);
+    mainWidget->reloadContext();
 }
 
 AppAuthorizationManager *Base::createAuthorizationManager() {

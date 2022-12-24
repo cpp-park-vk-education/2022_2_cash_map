@@ -9,11 +9,11 @@
 class ChatManager : public QObject {
     Q_OBJECT
 public:
-    virtual void sendMessage(Message *) = 0;
-
+    virtual void sendMessage(const QString &message) = 0;
+public slots:
+    virtual void getNewMessage(const QVariantMap &) = 0;
 signals:
-    void messageSent(bool);
-    void newMessage(Message *);
+    void messageReceived(Message *);
 };
 
 #endif // CHATMANAGER_H

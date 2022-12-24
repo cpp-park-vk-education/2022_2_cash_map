@@ -6,12 +6,12 @@
 AppAuthorizationManager::AppAuthorizationManager(NetworkManager *networkManager) : networkManager(networkManager) {
     connect(networkManager, SIGNAL(authStatusSignal(const QVariantMap &)), this, SLOT(processResponse(const QVariantMap &)));
     connect(networkManager, SIGNAL(registrationStatusSignal(const QVariantMap &)), this, SLOT(processResponse(const QVariantMap &)));
+    connect(networkManager, SIGNAL(logoutSignal(const QVariantMap &)), this, SLOT(processResponse(const QVariantMap &)));
 }
-
 
 void AppAuthorizationManager::authenticateUser(const QString &login, const QString &password) {
     networkManager->sendAuthRequest(login, password);
-};
+}
 
 void AppAuthorizationManager::logout() {
     networkManager->sendLogoutRequest();
@@ -26,14 +26,12 @@ void AppAuthorizationManager::processResponse(const QVariantMap &response) { // 
         User::getInstance()->setUserInfo(response["nick"].toString(), response["login"].toString(), response["password"].toString());
         emit authResponseSignal(AuthenticationStatus::Authorized);
     } else if (response["type"] == "login") {
-        qDebug() << "IncorrectLoginOrPassword";
         emit authResponseSignal(AuthenticationStatus::IncorrectLoginOrPassword);
     } else if (response["type"] == "reg" && response["code"] == "200") {
         emit registrationSignal(RegistrationStatus::Registered);
     } else if (response["type"] == "reg"){
         emit registrationSignal(RegistrationStatus::LoginInUse);
     } else if (response["type"] == "logout" && response["code"] == "200"){
-        User::getInstance()->clear();
         emit logoutSignal(AuthenticationStatus::LogoutSucceeded);
     } else {
         emit logoutSignal(AuthenticationStatus::LogoutFailed);
@@ -41,5 +39,5 @@ void AppAuthorizationManager::processResponse(const QVariantMap &response) { // 
 }
 
 bool AppAuthorizationManager::isThereAuthorizedUser() {
-    return false;
+    return User::getInstance()->initialized();
 };

@@ -97,7 +97,7 @@
          <widget class="QLineEdit" name="messageLineEdit"/>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="sendMessageButton">
           <property name="text">
            <string>Enter</string>
           </property>
