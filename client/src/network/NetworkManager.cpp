@@ -87,35 +87,35 @@ void NetworkManager::handleResponse(const QString &message) {
     QJsonObject obj = json_doc.object();
     qDebug() << "[LOGGER] " << message << '\n';
     QVariantMap map = obj.toVariantMap();
-    if (map["type"] == "create") {
+    if (map["type"].toString() == "create") {
         emit createSignal(map);
-    } else if (map["type"] == "leave"){
+    } else if (map["type"].toString() == "leave"){
         emit leaveSignal(map);
-    } else if (map["type"] == "join") {
+    } else if (map["type"].toString() == "join") {
         emit joinSignal(map);
-    } else if (map["type"] == "incomer") {
+    } else if (map["type"].toString() == "incomer") {
         emit newMemberSignal(map);
-    }else if (map["type"] == "play") {
+    }else if (map["type"].toString() == "play") {
         emit playSignal(map);
-    } else if (map["type"] == "pause") {
+    } else if (map["type"].toString() == "pause") {
         emit pauseSignal(map);
-    } else if (map["type"] == "s_src") {
+    } else if (map["type"].toString() == "s_src") {
         emit contentChangedSignal(map);
-    } else if (map["type"] == "login") {
+    } else if (map["type"].toString() == "login") {
         emit authStatusSignal(map);
-    } else if (map["type"] == "reg") {
+    } else if (map["type"].toString() == "reg") {
         emit registrationStatusSignal(map);
-    } else if (map["type"] == "logout") {
+    } else if (map["type"].toString() == "logout") {
         emit logoutSignal(map);
-    } else if (map["type"] == "s_time") {
+    } else if (map["type"].toString() == "s_time") {
         emit rewindSignal(map);
-    } else if (map["type"] == "chat") {
+    } else if (map["type"].toString() == "chat") {
         emit newMessageSignal(map);
-    } else if (map["type"] == "ping") {
+    } else if (map["type"].toString() == "ping") {
         emit pingSignal(map);
-    } else if (map["type"] == "pong") {
+    } else if (map["type"].toString() == "pong") {
         emit pongSignal(map);
-    } else if (map["type"] == "invalid") {
+    } else if (map["type"].toString() == "invalid") {
         emit invalid();
     }
 }

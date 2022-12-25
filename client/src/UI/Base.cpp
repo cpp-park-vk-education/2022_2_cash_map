@@ -32,6 +32,8 @@ Base::Base(QWidget *parent) : QMainWindow(parent),
 
     connect(mainWidget, SIGNAL(logout()), authManager, SLOT(logout()));
 
+    connect(networkManager, SIGNAL(invalid()), this, SLOT(openLoginWidget()));
+
     connect(authManager, SIGNAL(logoutSignal(AuthenticationStatus)), this, SLOT(processLogout(AuthenticationStatus)));
 
     connect(loginWidget, SIGNAL(authorized()), this, SLOT(openMainWidget()));
