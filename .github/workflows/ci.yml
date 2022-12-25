@@ -1,0 +1,43 @@
+on: push
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    container: ilyaaid/watch_up
+    steps:
+      - uses: actions/checkout@v3
+      - run: make check
+
+  build:
+    runs-on: ubuntu-latest
+    container: ilyaaid/watch_up
+    steps:
+      - uses: actions/checkout@v3
+      - run: make build
+
+  test:
+    runs-on: ubuntu-latest
+    container: ilyaaid/watch_up
+    steps:
+      - uses: actions/checkout@v3
+      - run: make test
+
+  coverage:
+    runs-on: ubuntu-latest
+    container: ilyaaid/watch_up
+    steps:
+      - uses: actions/checkout@v3
+      - run: git config --global --add safe.directory /__w/2022_2_cash_map/2022_2_cash_map
+      - run: git submodule update --init
+      - run: make coverage
+      - run: gcovr -r . -s | sed '/tests/d' | sed '/server/d' > client/README.txt
+      - run: gcovr -r . -s | sed '/tests/d' | sed '/client/d' > server/README.txt
+      - run: git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - run: git config --global user.name "github-actions[bot]"
+      - run: git add client/README.txt server/README.txt
+      - run: git commit -m "auto commit coverage report" && git push || echo "coverage not changed."
+      - uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: build/lcov/html
+          retention-days: 5
