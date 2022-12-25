@@ -44,7 +44,7 @@ RoomWidget::RoomWidget(Room *room, QWidget *parent) : QWidget(parent),
 }
 
 void RoomWidget::askForSync() {
-
+    manager->sync();
 }
 
 void RoomWidget::updateChat(Message* message) {

@@ -60,7 +60,7 @@ class YoutubeWatcher : public IVideoWatcher {
 private:
     void handleLoading(int progress_percent);
 public:
-    explicit YoutubeWatcher(CustomWebView *_view);
+    explicit YoutubeWatcher(QWebEngineView *_view);
     ~YoutubeWatcher() = default;
     /// @brief Переключает режимы PLAY / PAUSE видео
     virtual void togglePlay() override;
@@ -100,7 +100,7 @@ public:
 
 private:
     bool urlWasSetted = false;
-    CustomWebView *view;
+    QWebEngineView *view;
 };
 
 

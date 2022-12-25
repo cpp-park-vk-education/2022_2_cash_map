@@ -36,7 +36,6 @@ VideoRoomManager::VideoRoomManager(Room *room, IVideoWatcher *watcher) : startSt
 
 void VideoRoomManager::checkRoomState() {
     // delay
-
     qDebug() << "old state: " << startState.playing;
     PlayerState state = watcher->getState();
 
@@ -91,6 +90,9 @@ void VideoRoomManager::removeMember(const QVariantMap &newMemberInfo) {
 }
 
 void VideoRoomManager::startWatching(const QVariantMap &response) {
+    qDebug() << "START TEST";
+    qDebug() << "WATCHER STATE: " << watcher->isPlaying();
+    qDebug() << "CODE: " << response["code"].toString();
     if (response["code"].toString() == "" && !watcher->isPlaying()) {
         watcher->togglePlay();
         startState.playing = true;

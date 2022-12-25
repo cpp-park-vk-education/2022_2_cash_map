@@ -1,7 +1,6 @@
 #ifndef RUTUBEWATCHER_H
 #define RUTUBEWATCHER_H
 
-#include "include/UI/CustomWebView.h"
 #include <QtWebEngineWidgets/QWebEngineView>
 #include "YoutubeWatcher.h"
 
@@ -14,7 +13,7 @@ private:
 public:
     RutubeWatcher() = delete;
 
-    explicit RutubeWatcher(CustomWebView *_view);
+    explicit RutubeWatcher(QWebEngineView *_view);
     void togglePlay() override;
     void setCurrentTime(double time) override;
     void setCurrentSpeed(double speed) override;
@@ -31,7 +30,7 @@ public:
     QString getVideoIdByRawLink(const QUrl& url) override;
 
 private:
-    CustomWebView *view = nullptr;
+    QWebEngineView *view = nullptr;
     bool urlWasSetted = false;
 };
 

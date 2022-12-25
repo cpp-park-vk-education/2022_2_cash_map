@@ -13,7 +13,7 @@ void YoutubeWatcher::handleLoading(int loaded_percent) {
     }
 }
 
-YoutubeWatcher::YoutubeWatcher(CustomWebView *_view) : urlWasSetted(false), view(_view) {
+YoutubeWatcher::YoutubeWatcher(QWebEngineView *_view) : urlWasSetted(false), view(_view) {
     view->setWindowTitle("Watch Up Youtube player");
     view->settings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
     view->settings()->setAttribute(QWebEngineSettings::FullScreenSupportEnabled, true);

@@ -3,7 +3,7 @@
 #include <QWebEngineSettings>
 
 
-RutubeWatcher::RutubeWatcher(CustomWebView *_view) : view(_view), urlWasSetted(false) {
+RutubeWatcher::RutubeWatcher(QWebEngineView *_view) : view(_view), urlWasSetted(false) {
     view->setWindowTitle("Watch Up Youtube player");
     view->settings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
     view->settings()->setAttribute(QWebEngineSettings::FullScreenSupportEnabled, true);
@@ -27,7 +27,7 @@ void RutubeWatcher::handleLoading(int loaded_percent) {
     if (loaded_percent == 100) {
         qDebug() << "READY TO WATCH!";
         emit ReadyToWatch(true);
-        initPlayerAfterSetContent();
+        // initPlayerAfterSetContent();
     }
 }
 
