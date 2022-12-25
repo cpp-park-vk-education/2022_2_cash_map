@@ -1,18 +1,24 @@
 #include "include/domain/VideoRoomManager.h"
 #include "include/domain/models/VideoRoomMember.h"
 
+#include <QApplication>
+
 
 VideoRoomManager::VideoRoomManager(Room *room, YoutubeWatcher *watcher) : startState(watcher->getState()),
                                                               watcher(watcher),
                                                               networkManager(NetworkManager::getInstance()),
                                                               room(room) {
 
+
     connect(networkManager, SIGNAL(newMemberSignal(const QVariantMap &)), this, SLOT(acceptNewMember(const QVariantMap &)));
     connect(networkManager, SIGNAL(leaveSignal(const QVariantMap &)), this, SLOT(removeMember(const QVariantMap &)));
     connect(networkManager, SIGNAL(contentChangedSignal(const QVariantMap &)), this, SLOT(changeVideoContent(const QVariantMap &)));
     connect(networkManager, SIGNAL(playSignal(const QVariantMap &)), this, SLOT(startWatching(const QVariantMap &)));
     connect(networkManager, SIGNAL(pauseSignal(const QVariantMap &)), this, SLOT(stopWatching(const QVariantMap &)));
+    connect(networkManager, SIGNAL(rewindSignal(const QVariantMap &)), this, SLOT(rewindTo(const QVariantMap &)));
 
+    connect(&timer, SIGNAL(timeout()), this, SLOT(updatePlayerState()));
+    timer.start(3000);
     if (room->getSource() != "") {
         QString id = YoutubeWatcher::getVideoIdByRawLink(room->getSource());
         QString link = YoutubeWatcher::getLinkByVideoId(id);
@@ -22,25 +28,36 @@ VideoRoomManager::VideoRoomManager(Room *room, YoutubeWatcher *watcher) : startS
 
 void VideoRoomManager::checkRoomState() {
     // delay
-    QTime dieTime = QTime::currentTime().addMSecs(500);
-    while (QTime::currentTime() < dieTime) {
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-    }
 
-
+    qDebug() << "old state: " << startState.playing;
     PlayerState state = watcher->getState();
+
+    state.playing = watcher->isPlaying();
+    state.timestamp = watcher->getCurrentTime();
+    state.speed = watcher->getCurrentSpeed();
+
+    qDebug() << "new state: " << state.playing;
     if (state.playing != startState.playing && state.playing == false) {
         networkManager->sendPauseRequest(convertTimeStampToString(state.timestamp));
     } else if (state.playing != startState.playing && state.playing == true) {
         networkManager->sendPlayRequest();
     } else if (state.speed != startState.speed) {
 
+    } else if (abs(startState.timestamp - state.timestamp) > 5) {
+        qDebug() << "REWIND!!!!";
+        qDebug() << abs(startState.timestamp - state.timestamp);
+        networkManager->sendRewindRequest(convertTimeStampToString(state.timestamp));
     }
 
     startState = state;
 }
 
+void VideoRoomManager::updatePlayerState() {
+    startState.timestamp = watcher->getCurrentTime();
+}
+
 void VideoRoomManager::leave() {
+    timer.stop();
     networkManager->sendLeaveRoomRequest();
 
 }
@@ -66,15 +83,24 @@ void VideoRoomManager::removeMember(const QVariantMap &newMemberInfo) {
 }
 
 void VideoRoomManager::startWatching(const QVariantMap &response) {
-    if (response["code"] != "200"/* && !watcher->isPlaying()*/) {
+    if (response["code"].toString() == "" && !watcher->isPlaying()) {
         watcher->togglePlay();
+        startState.playing = true;
+    } else if (response["code"].toString() != "200") {
+        watcher->togglePlay();
+        startState.playing = false;
     }
 }
 
 void VideoRoomManager::stopWatching(const QVariantMap &response) {
-    if (response["code"] != "200"/* && watcher->isPlaying()*/) {
+    if (response["code"].toString() == "" && watcher->isPlaying()) {
         watcher->togglePlay();
+        startState.playing = false;
+    } else if (response["code"].toString() != "200") {
+        watcher->togglePlay();
+        startState.playing = true;
     }
+
 }
 
 void VideoRoomManager::changeVideoContent(const QVariantMap &response) {
@@ -83,7 +109,9 @@ void VideoRoomManager::changeVideoContent(const QVariantMap &response) {
     QString id = YoutubeWatcher::getVideoIdByRawLink(src);
     QString link = YoutubeWatcher::getLinkByVideoId(id);
     watcher->setContentPath(link);
-    startState = watcher->getState();
+
+    startState.playing = false;
+    startState.timestamp = 0;
 }
 
 void VideoRoomManager::changeVideoContent(const QString &url) {
@@ -92,11 +120,13 @@ void VideoRoomManager::changeVideoContent(const QString &url) {
     QString id = YoutubeWatcher::getVideoIdByRawLink(url);
     QString link = YoutubeWatcher::getLinkByVideoId(id);
     watcher->setContentPath(link);
-    startState = watcher->getState();
+
+    startState.playing = false;
+    startState.timestamp = 0;
 }
 
 void VideoRoomManager::rewindTo(int timeStamp) {
-    // передаем запрос к webEngine
+    qDebug() << "REWIND TO " << timeStamp;
 }
 
 void VideoRoomManager::kickMember(RoomMember *) {

@@ -6,6 +6,7 @@ void YoutubeWatcher::handleLoading(int loaded_percent) {
     if (loaded_percent == 100) {
         qDebug() << "READY TO WATCH!";
         emit ReadyToWatch(true);
+        togglePlay();
     }
 }
 
@@ -84,7 +85,7 @@ double YoutubeWatcher::getCurrentSpeed() const {
         return 1.0;
     QString js = "document.querySelector('video').playbackRate;";
     double answer = -1;
-    view->page()->runJavaScript(js, [&answer](const QVariant &v){
+    view->page()->runJavaScript(js, [&answer](const QVariant &v) {
         qDebug() << v.toString();
         answer = v.toDouble();
     });
@@ -111,7 +112,7 @@ PlayerState YoutubeWatcher::getState() const {
 }
 
 QString YoutubeWatcher::getLinkByVideoId(const QString& id) {
-    return "https://www.youtube.com/embed/" + id + "?&enablejsapi=1&html5=1&controls=2&autoplay=0";
+    return "https://www.youtube.com/embed/" + id + "?&enablejsapi=1&html5=1&controls=2&autoplay=1";
 }
 
 QString YoutubeWatcher::getVideoIdByRawLink(const QUrl& url) {

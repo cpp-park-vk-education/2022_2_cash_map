@@ -9,7 +9,7 @@
 class RoomManager : public QObject {
     Q_OBJECT
 public:
-//    virtual ~RoomManager();
+    virtual ~RoomManager() = default;
 
     virtual void reconnect() = 0;
 
@@ -39,7 +39,6 @@ public slots:
 signals:
     void memberLeaved();
     void newMember();
-
 };
 
 #endif // ROOMMANAGER_H

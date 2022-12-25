@@ -16,6 +16,7 @@ struct PlayerState {
 class IVideoWatcher : public QObject {
     Q_OBJECT
  public:
+    virtual ~IVideoWatcher() = default;
     /// @brief Переключает режимы PLAY / PAUSE видео
     virtual void togglePlay() = 0;
     /// @brief Устанавливает время плеера

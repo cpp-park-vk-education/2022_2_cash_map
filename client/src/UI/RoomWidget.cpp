@@ -39,17 +39,17 @@ RoomWidget::RoomWidget(Room *room, QWidget *parent) : QWidget(parent),
 }
 
 void RoomWidget::updateChat(Message* message) {
-    qDebug() << "IAM HERE!!";
-    qDebug() << message->messageContent();
     ChatMessageWidget *messageWidget = new ChatMessageWidget(message->messageSender(), message->messageContent(), message->messageTime());
     QListWidgetItem *item = new QListWidgetItem(ui->chatListWidget);
     item->setSizeHint(messageWidget->sizeHint());
     ui->chatListWidget->addItem(item);
     ui->chatListWidget->setItemWidget(item, messageWidget);
+    ui->chatListWidget->scrollToItem(item);
 }
 
 void RoomWidget::sendMessage() {
     QString message = ui->messageLineEdit->text();
+    ui->messageLineEdit->clear();
     chatManager->sendMessage(message);
 }
 
@@ -76,7 +76,6 @@ void RoomWidget::copyRoomId() {
 }
 
 void RoomWidget::changeVideo(const QString &newUrl) {
-    qDebug() << newUrl;
     manager->changeVideoContent(newUrl);
 }
 

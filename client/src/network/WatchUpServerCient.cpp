@@ -2,7 +2,7 @@
 
 
 WatchUpServerClient::WatchUpServerClient(QObject *parent) : QObject(parent) {
-    url = QUrl("wss://19b4-46-242-13-195.eu.ngrok.io");
+    url = QUrl("wss://d474-46-242-13-195.eu.ngrok.io");
     webSocket = new QWebSocket();
 
     connect(webSocket, SIGNAL(connected()), this, SIGNAL(connected()));

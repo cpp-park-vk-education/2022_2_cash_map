@@ -9,6 +9,7 @@
 class ChatManager : public QObject {
     Q_OBJECT
 public:
+    virtual ~ChatManager() = default;
     virtual void sendMessage(const QString &message) = 0;
 public slots:
     virtual void getNewMessage(const QVariantMap &) = 0;

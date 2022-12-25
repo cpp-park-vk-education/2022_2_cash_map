@@ -10,6 +10,7 @@ RoomChatManager::RoomChatManager() : networkManager(NetworkManager::getInstance(
 
 void RoomChatManager::sendMessage(const QString &message) {
     networkManager->sendMessageRequest(message);
+
 }
 
 

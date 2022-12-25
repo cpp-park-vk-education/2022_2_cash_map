@@ -23,6 +23,8 @@ enum RegistrationStatus {
 class AuthorizationManager : public QObject {
     Q_OBJECT
 public:
+    virtual ~AuthorizationManager() = default;
+
     virtual void authenticateUser(const QString &login, const QString &password) = 0;
 
     virtual void registerUser(const QString &username, const QString &login, const QString &password) = 0;

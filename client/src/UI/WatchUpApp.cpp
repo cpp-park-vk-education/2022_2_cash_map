@@ -64,7 +64,6 @@ void WatchUpApp::showNewRoomWidget(Room *room) {
     roomWidget = new RoomWidget(room);
     connect(roomWidget, SIGNAL(leaved()), this, SLOT(closeRoom()));
 
-    qDebug() << room->getMembers()[0]->getUsername();
     ui->stackedWidget->addWidget(roomWidget);
     ui->stackedWidget->setCurrentWidget(roomWidget);
 }

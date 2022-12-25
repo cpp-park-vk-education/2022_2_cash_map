@@ -41,12 +41,14 @@ public slots:
 private:
     QString convertTimeStampToString(int timeStamp);
     int convertTimeStampToInt(QString timeStamp);
+    void updatePlayerState();
 private:
     PlayerState startState;
     YoutubeWatcher *watcher;
     NetworkManager *networkManager;
 
     Room *room;
+    QTimer timer;
 };
 
 
