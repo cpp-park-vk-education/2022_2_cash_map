@@ -1,0 +1,38 @@
+#ifndef RUTUBEWATCHER_H
+#define RUTUBEWATCHER_H
+
+#include "include/UI/CustomWebView.h"
+#include <QtWebEngineWidgets/QWebEngineView>
+#include "YoutubeWatcher.h"
+
+class RutubeWatcher : public IVideoWatcher {
+    Q_OBJECT
+private:
+    void handleLoading(int loaded_percent);
+    void removeAdverts();
+    void initPlayerAfterSetContent();
+public:
+    RutubeWatcher() = delete;
+
+    explicit RutubeWatcher(CustomWebView *_view);
+    void togglePlay() override;
+    void setCurrentTime(double time) override;
+    void setCurrentSpeed(double speed) override;
+    void setContentPath(const QString& path) override;
+
+    bool isPlaying() const override;
+    double getCurrentTime() const override;
+    double getCurrentSpeed() const override;
+    QString getContentPath() const override;
+
+    PlayerState getState() const override;
+
+    QString getLinkByVideoId(const QString& id) override;
+    QString getVideoIdByRawLink(const QUrl& url) override;
+
+private:
+    CustomWebView *view = nullptr;
+    bool urlWasSetted = false;
+};
+
+#endif // RUTUBEWATCHER_H

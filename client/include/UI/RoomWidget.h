@@ -21,6 +21,7 @@ public:
 
     void rejoin();
 public slots:
+    void askForSync();
     void updateChat(Message*);
     void sendMessage();
     void leaveRoom();
@@ -35,7 +36,7 @@ private:
     RoomManager *manager;
     ChatManager *chatManager;
 
-    YoutubeWatcher *watcher;
+    IVideoWatcher *watcher;
     CustomWebView *webView;
 
 };

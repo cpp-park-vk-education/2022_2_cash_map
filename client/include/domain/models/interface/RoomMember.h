@@ -10,6 +10,10 @@ public:
 
     virtual QString getUserId() = 0;
 
+    virtual QString getCurrentTimeStamp() = 0;
+
+    virtual void setTimeStamp(const QString &timeStamp) = 0;
+
 };
 
 #endif // ROOMMEMBER_H

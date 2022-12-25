@@ -4,7 +4,7 @@
 #include <QApplication>
 
 
-VideoRoomManager::VideoRoomManager(Room *room, YoutubeWatcher *watcher) : startState(watcher->getState()),
+VideoRoomManager::VideoRoomManager(Room *room, IVideoWatcher *watcher) : startState(watcher->getState()),
                                                               watcher(watcher),
                                                               networkManager(NetworkManager::getInstance()),
                                                               room(room) {
@@ -12,16 +12,24 @@ VideoRoomManager::VideoRoomManager(Room *room, YoutubeWatcher *watcher) : startS
 
     connect(networkManager, SIGNAL(newMemberSignal(const QVariantMap &)), this, SLOT(acceptNewMember(const QVariantMap &)));
     connect(networkManager, SIGNAL(leaveSignal(const QVariantMap &)), this, SLOT(removeMember(const QVariantMap &)));
+
     connect(networkManager, SIGNAL(contentChangedSignal(const QVariantMap &)), this, SLOT(changeVideoContent(const QVariantMap &)));
+
     connect(networkManager, SIGNAL(playSignal(const QVariantMap &)), this, SLOT(startWatching(const QVariantMap &)));
     connect(networkManager, SIGNAL(pauseSignal(const QVariantMap &)), this, SLOT(stopWatching(const QVariantMap &)));
+
     connect(networkManager, SIGNAL(rewindSignal(const QVariantMap &)), this, SLOT(rewindTo(const QVariantMap &)));
+
+    connect(networkManager, SIGNAL(pingSignal(const QVariantMap &)), this, SLOT(acceptPing(const QVariantMap &)));
+
+    connect(networkManager, SIGNAL(pongSignal(const QVariantMap &)), this, SLOT(acceptPong(const QVariantMap &)));
 
     connect(&timer, SIGNAL(timeout()), this, SLOT(updatePlayerState()));
     timer.start(3000);
+
     if (room->getSource() != "") {
-        QString id = YoutubeWatcher::getVideoIdByRawLink(room->getSource());
-        QString link = YoutubeWatcher::getLinkByVideoId(id);
+        QString id = watcher->getVideoIdByRawLink(room->getSource());
+        QString link = watcher->getLinkByVideoId(id);
         watcher->setContentPath(link);
     }
 }
@@ -106,8 +114,8 @@ void VideoRoomManager::stopWatching(const QVariantMap &response) {
 void VideoRoomManager::changeVideoContent(const QVariantMap &response) {
     // требуется проверка валидности урла
     QString src = response["src"].toString();
-    QString id = YoutubeWatcher::getVideoIdByRawLink(src);
-    QString link = YoutubeWatcher::getLinkByVideoId(id);
+    QString id = watcher->getVideoIdByRawLink(src);
+    QString link = watcher->getLinkByVideoId(id);
     watcher->setContentPath(link);
 
     startState.playing = false;
@@ -117,16 +125,24 @@ void VideoRoomManager::changeVideoContent(const QVariantMap &response) {
 void VideoRoomManager::changeVideoContent(const QString &url) {
     // требуется проверка валидности урла
     networkManager->sendContentChangedRequest(url);
-    QString id = YoutubeWatcher::getVideoIdByRawLink(url);
-    QString link = YoutubeWatcher::getLinkByVideoId(id);
+    QString id = watcher->getVideoIdByRawLink(url);
+    QString link = watcher->getLinkByVideoId(id);
     watcher->setContentPath(link);
 
     startState.playing = false;
     startState.timestamp = 0;
 }
 
-void VideoRoomManager::rewindTo(int timeStamp) {
+void VideoRoomManager::rewindTo(const QVariantMap &response) {
+    int timeStamp = convertTimeStampToInt(response["time"].toString());
     qDebug() << "REWIND TO " << timeStamp;
+    if (response["code"].toString() == "") {
+        watcher->setCurrentTime(timeStamp);
+    }
+}
+
+void VideoRoomManager::sync() {
+    networkManager->sendRewindRequest(convertTimeStampToString(watcher->getCurrentTime()));
 }
 
 void VideoRoomManager::kickMember(RoomMember *) {
@@ -136,12 +152,40 @@ void VideoRoomManager::kickMember(RoomMember *) {
 
 void VideoRoomManager::acceptNewMember(const QVariantMap &newMemberInfo) {
     for (auto viewerInfo : newMemberInfo["viewers"].toList()) {
-        RoomMember *member = new VideoRoomMember(viewerInfo.toMap()["nick"].toString(), viewerInfo.toMap()["id"].toString());
+        RoomMember *member = new VideoRoomMember(viewerInfo.toMap()["nick"].toString(), viewerInfo.toMap()["id"].toString(), "00:00:00");
         room->addMember(member);
         break;
     }
 
     emit newMember();
+}
+
+void VideoRoomManager::acceptPong(const QVariantMap &request) {
+    // надо переделать в QHash
+    QString userId;
+    QString time;
+    QList<RoomMember *> members = getMembersList();
+    for (auto viewerInfo : request["viewers"].toList()) {
+        userId = request["id"].toString();
+        time = request["time"].toString();
+
+        for (auto member : members) {
+            if (member->getUserId() == userId) {
+                member->setTimeStamp(time);
+                break;
+            }
+        }
+    }
+
+
+
+
+    emit updateMemebersSyncStatus();
+}
+
+void VideoRoomManager::acceptPing(const QVariantMap &request) {
+    QString time = convertTimeStampToString(watcher->getCurrentTime());
+    networkManager->sendPongRequest(time, request["server_time"].toString());
 }
 
 QString VideoRoomManager::getRoomId() {

@@ -10,7 +10,7 @@
 
 class VideoRoomManager : public RoomManager {
 public:
-    VideoRoomManager(Room *room, YoutubeWatcher *watcher);
+    VideoRoomManager(Room *room, IVideoWatcher *watcher);
 
     ~VideoRoomManager();
 
@@ -18,7 +18,7 @@ public:
 
     virtual void reconnect() override;
 
-    virtual void rewindTo(int timeStamp) override;
+    virtual void rewindTo(const QVariantMap &) override;
 
     virtual void kickMember(RoomMember *) override;
 
@@ -31,6 +31,8 @@ public:
     virtual void updateRoomState() override;
 
     virtual void leave() override;
+
+    virtual void sync() override;
 public slots:
     virtual void checkRoomState() override;
     virtual void acceptNewMember(const QVariantMap &) override;
@@ -38,13 +40,16 @@ public slots:
     virtual void changeVideoContent(const QVariantMap &) override;
     virtual void startWatching(const QVariantMap &) override;
     virtual void stopWatching(const QVariantMap &) override;
+    virtual void acceptPing(const QVariantMap &) override;
+    virtual void acceptPong(const QVariantMap &request) override;
+
+    virtual QString convertTimeStampToString(int timeStamp) override;
+    virtual int convertTimeStampToInt(QString timeStamp) override;
 private:
-    QString convertTimeStampToString(int timeStamp);
-    int convertTimeStampToInt(QString timeStamp);
     void updatePlayerState();
 private:
     PlayerState startState;
-    YoutubeWatcher *watcher;
+    IVideoWatcher *watcher;
     NetworkManager *networkManager;
 
     Room *room;

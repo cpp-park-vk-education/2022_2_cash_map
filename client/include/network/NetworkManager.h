@@ -37,6 +37,8 @@ public:
     void sendLogoutRequest();
 
     void sendMessageRequest(const QString &content);
+
+    void sendPongRequest(const QString &timeStamp, const QString &serverTime);
 public slots:
     void handleResponse(const QString &message);
     void recovery();
@@ -56,6 +58,8 @@ signals:
     void registrationStatusSignal(const QVariantMap &);
     void logoutSignal(const QVariantMap &);
     void newMessageSignal(const QVariantMap &);
+    void pingSignal(const QVariantMap &);
+    void pongSignal(const QVariantMap &);
     void invalid();
 private:
     WatchUpServerClient *client;

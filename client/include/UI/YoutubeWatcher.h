@@ -3,6 +3,8 @@
 
 #include "include/UI/CustomWebView.h"
 #include <QtWebEngineWidgets/QWebEngineView>
+#include <QObject>
+#include <iostream>
 
 
 // Означает текущее состояние плеера
@@ -46,6 +48,10 @@ class IVideoWatcher : public QObject {
     /// @return текущее состояние плеера
     virtual PlayerState getState() const = 0;
 
+    virtual QString getLinkByVideoId(const QString& id) = 0;
+
+    virtual QString getVideoIdByRawLink(const QUrl& url) = 0;
+
 signals:
     void ReadyToWatch(bool ok);
 };
@@ -88,14 +94,15 @@ public:
     /// @brief Получить ссылку для задания пути до видеоконтента
     /// @param id id ютубовского видео
     /// @return возвращает готовую ссылку, которую можно передавать в setContentPath
-    static QString getLinkByVideoId(const QString& id);
+    virtual QString getLinkByVideoId(const QString& id) override;
 
-    static QString getVideoIdByRawLink(const QUrl& url);
+    virtual QString getVideoIdByRawLink(const QUrl& url) override;
 
 private:
     bool urlWasSetted = false;
     CustomWebView *view;
 };
+
 
 
 #endif // YOUTUBEWATCHER_H

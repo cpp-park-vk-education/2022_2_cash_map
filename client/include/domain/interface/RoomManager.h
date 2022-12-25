@@ -15,7 +15,7 @@ public:
 
     virtual void changeVideoContent(const QString &url) = 0;
 
-    virtual void rewindTo(int timeStamp) = 0;
+    virtual void rewindTo(const QVariantMap &) = 0;
 
     virtual void kickMember(RoomMember *) = 0;
 
@@ -28,17 +28,25 @@ public:
     virtual void updateRoomState() = 0;
 
     virtual void leave() = 0;
+
+    virtual QString convertTimeStampToString(int timeStamp) = 0;
+
+    virtual int convertTimeStampToInt(QString timeStamp) = 0;
+
+    virtual void sync() = 0;
 public slots:
     virtual void checkRoomState() = 0;
     virtual void acceptNewMember(const QVariantMap &) = 0;
     virtual void removeMember(const QVariantMap &) = 0;
     virtual void changeVideoContent(const QVariantMap &) = 0;
     virtual void startWatching(const QVariantMap &) = 0;
-
     virtual void stopWatching(const QVariantMap &) = 0;
+    virtual void acceptPing(const QVariantMap &) = 0;
+    virtual void acceptPong(const QVariantMap &request) = 0;
 signals:
     void memberLeaved();
     void newMember();
+    void updateMemebersSyncStatus();
 };
 
 #endif // ROOMMANAGER_H

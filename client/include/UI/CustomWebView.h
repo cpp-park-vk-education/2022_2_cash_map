@@ -24,7 +24,7 @@ public slots:
 
 
 private:
-    QTimer timer;
+    QTimer *timer;
     QObject *childObj = nullptr;
 };
 

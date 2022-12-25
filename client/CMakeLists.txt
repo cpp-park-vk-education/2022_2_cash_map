@@ -17,7 +17,6 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network WebSockets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network WebSockets)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS WebEngineWidgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS WebEngineWidgets)
-find_package(Qt6 REQUIRED COMPONENTS Test)
 
 set(CMAKE_AUTOUIC_SEARCH_PATHS static/ui)
 
@@ -38,7 +37,6 @@ target_link_libraries(${PROJECT_NAME}_lib PUBLIC Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(${PROJECT_NAME}_lib  PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_link_libraries(${PROJECT_NAME}_lib  PRIVATE Qt${QT_VERSION_MAJOR}::WebSockets)
 target_link_libraries(${PROJECT_NAME}_lib PRIVATE  Qt${QT_VERSION_MAJOR}::WebEngineWidgets)
-target_link_libraries(${PROJECT_NAME}_lib PRIVATE Qt6::Test)
 
 
 

@@ -1,5 +1,8 @@
-#include <QtWebEngineWidgets>
 #include "include/UI/YoutubeWatcher.h"
+#include "qurlquery.h"
+
+#include <QApplication>
+#include <QWebEngineSettings>
 
 
 void YoutubeWatcher::handleLoading(int loaded_percent) {
@@ -10,7 +13,7 @@ void YoutubeWatcher::handleLoading(int loaded_percent) {
     }
 }
 
-YoutubeWatcher::YoutubeWatcher(CustomWebView *_view) : view(_view), urlWasSetted(false) {
+YoutubeWatcher::YoutubeWatcher(CustomWebView *_view) : urlWasSetted(false), view(_view) {
     view->setWindowTitle("Watch Up Youtube player");
     view->settings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
     view->settings()->setAttribute(QWebEngineSettings::FullScreenSupportEnabled, true);
@@ -18,7 +21,12 @@ YoutubeWatcher::YoutubeWatcher(CustomWebView *_view) : view(_view), urlWasSetted
     view->settings()->setAttribute(QWebEngineSettings::SpatialNavigationEnabled, true);
     view->settings()->setAttribute(QWebEngineSettings::JavascriptEnabled, true);
     view->settings()->setAttribute(QWebEngineSettings::JavascriptCanOpenWindows, true);
+    view->settings()->setAttribute(QWebEngineSettings::AllowWindowActivationFromJavaScript, true);
     view->settings()->setAttribute(QWebEngineSettings::PlaybackRequiresUserGesture, false);
+    view->settings()->setAttribute(QWebEngineSettings::HyperlinkAuditingEnabled, false);
+
+    QWebEnginePage *webPage = new QWebEnginePage();
+    view->setPage(webPage);
 
     QObject::connect(view, &QWebEngineView::loadProgress, this, &YoutubeWatcher::handleLoading);
 }
@@ -85,7 +93,7 @@ double YoutubeWatcher::getCurrentSpeed() const {
         return 1.0;
     QString js = "document.querySelector('video').playbackRate;";
     double answer = -1;
-    view->page()->runJavaScript(js, [&answer](const QVariant &v) {
+    view->page()->runJavaScript(js, [&answer](const QVariant &v){
         qDebug() << v.toString();
         answer = v.toDouble();
     });
@@ -122,3 +130,4 @@ QString YoutubeWatcher::getVideoIdByRawLink(const QUrl& url) {
 
     return query.queryItemValue("v");
 }
+

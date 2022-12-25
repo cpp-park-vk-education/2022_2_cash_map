@@ -74,6 +74,11 @@ void NetworkManager::sendInvalidRequest() {
     client->sendRequest(request);
 }
 
+void NetworkManager::sendPongRequest(const QString &timeStamp, const QString &serverTime) {
+    QString request = "{\"type\": \"pong\", \"time\": \"" + timeStamp + "\", \"server_time\": \"" + serverTime + "\"}";
+    client->sendRequest(request);
+}
+
 void NetworkManager::handleResponse(const QString &message) {
     // обращаемся к сериалайзеру
     QByteArray json_bytes = message.toUtf8();
@@ -101,12 +106,15 @@ void NetworkManager::handleResponse(const QString &message) {
     } else if (map["type"] == "reg") {
         emit registrationStatusSignal(map);
     } else if (map["type"] == "logout") {
-        qDebug() << "LOGOUT";
         emit logoutSignal(map);
     } else if (map["type"] == "s_time") {
         emit rewindSignal(map);
     } else if (map["type"] == "chat") {
         emit newMessageSignal(map);
+    } else if (map["type"] == "ping") {
+        emit pingSignal(map);
+    } else if (map["type"] == "pong") {
+        emit pongSignal(map);
     } else if (map["type"] == "invalid") {
         emit invalid();
     }
