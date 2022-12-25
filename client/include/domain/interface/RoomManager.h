@@ -15,8 +15,6 @@ public:
 
     virtual void changeVideoContent(const QString &url) = 0;
 
-    virtual void rewindTo(const QVariantMap &) = 0;
-
     virtual void kickMember(RoomMember *) = 0;
 
     virtual QString getRoomId() = 0;
@@ -24,8 +22,6 @@ public:
     virtual const QList<RoomMember *> &getMembersList() = 0;
 
     virtual void sendMessage() = 0;
-
-    virtual void updateRoomState() = 0;
 
     virtual void leave() = 0;
 
@@ -35,6 +31,8 @@ public:
 
     virtual void sync() = 0;
 public slots:
+    virtual void updateRoomState() = 0;
+    virtual void rewindTo(const QVariantMap &) = 0;
     virtual void checkRoomState() = 0;
     virtual void acceptNewMember(const QVariantMap &) = 0;
     virtual void removeMember(const QVariantMap &) = 0;
@@ -43,6 +41,7 @@ public slots:
     virtual void stopWatching(const QVariantMap &) = 0;
     virtual void acceptPing(const QVariantMap &) = 0;
     virtual void acceptPong(const QVariantMap &request) = 0;
+    virtual void updatePlayerState() = 0;
 signals:
     void memberLeaved();
     void newMember();

@@ -18,8 +18,6 @@ public:
 
     virtual void reconnect() override;
 
-    virtual void rewindTo(const QVariantMap &) override;
-
     virtual void kickMember(RoomMember *) override;
 
     virtual QString getRoomId() override;
@@ -28,12 +26,12 @@ public:
 
     virtual void sendMessage() override;
 
-    virtual void updateRoomState() override;
-
     virtual void leave() override;
 
     virtual void sync() override;
 public slots:
+    virtual void updateRoomState() override;
+    virtual void rewindTo(const QVariantMap &) override;
     virtual void checkRoomState() override;
     virtual void acceptNewMember(const QVariantMap &) override;
     virtual void removeMember(const QVariantMap &) override;
@@ -45,8 +43,7 @@ public slots:
 
     virtual QString convertTimeStampToString(int timeStamp) override;
     virtual int convertTimeStampToInt(QString timeStamp) override;
-private:
-    void updatePlayerState();
+    virtual void updatePlayerState() override;
 private:
     PlayerState startState;
     IVideoWatcher *watcher;

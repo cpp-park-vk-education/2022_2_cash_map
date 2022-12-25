@@ -16,7 +16,7 @@ RoomWidget::RoomWidget(Room *room, QWidget *parent) : QWidget(parent),
     webView = new CustomWebView(this);
     webView->setMouseTracking(true);
 
-    watcher = new RutubeWatcher(webView);
+    watcher = new YoutubeWatcher(webView);
     manager = new VideoRoomManager(room, watcher);
     chatManager = new RoomChatManager();
 

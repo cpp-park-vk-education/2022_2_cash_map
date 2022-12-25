@@ -27,7 +27,7 @@ void RutubeWatcher::handleLoading(int loaded_percent) {
     if (loaded_percent == 100) {
         qDebug() << "READY TO WATCH!";
         emit ReadyToWatch(true);
-        // initPlayerAfterSetContent();
+        initPlayerAfterSetContent();
     }
 }
 
