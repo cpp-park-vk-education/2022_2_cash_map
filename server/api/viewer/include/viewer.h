@@ -12,6 +12,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "room.h"
+#include "user.h"
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
@@ -24,12 +25,13 @@ typedef std::shared_ptr<IRoom> room_ptr;
 typedef websocket::stream<beast::tcp_stream> ws_stream;
 typedef std::unique_ptr<ws_stream> stream_ptr;
 
+typedef std::unique_ptr<User> user_ptr;
 class handler;
 
 struct access_options{
-    bool can_pause  = false;
-    bool can_rewind = false;
-    bool is_host    = false;
+    bool can_pause  = true;
+    bool can_rewind = true;
+    bool is_host    = true;
 };
 
 
@@ -44,7 +46,7 @@ public:
     virtual void send_message(const std::string&)           = 0;
     virtual void on_write(error_code ec)                    = 0;
 
-    virtual uuid get_id() const                             = 0;
+    virtual std::string get_id() const                             = 0;
     virtual std::string get_nickname() const                = 0;
     virtual access_options get_a_opts() const               = 0;
 
@@ -57,8 +59,10 @@ public:
 
 class Viewer: public IViewer, public std::enable_shared_from_this<Viewer> {
 public:
-    Viewer(stream_ptr && ws, uuid&& id, std::string nickname, room_ptr&& room = nullptr);
-    Viewer(stream_ptr && ws, uuid&& id, access_options a_opts, std::string nickname, room_ptr&& room = nullptr);
+    Viewer(stream_ptr && ws, user_ptr&& user = nullptr, room_ptr&& room = nullptr);
+    Viewer(stream_ptr && ws, access_options a_opts, user_ptr&& user = nullptr, room_ptr&& room = nullptr);
+    Viewer(stream_ptr&& ws, std::string&& id, std::string&& nick, room_ptr&& room = nullptr);
+
     ~Viewer()                                   override;
 
     void start()                                override;
@@ -68,7 +72,7 @@ public:
     void send_message(const std::string&)       override;
     void on_write(error_code ec)                override;
 
-    uuid get_id() const                         override;
+    std::string get_id() const                         override;
     std::string get_nickname() const            override;
     access_options get_a_opts() const           override;
 
@@ -77,10 +81,12 @@ public:
     void set_access_opts(const access_options& )override;
 
 protected:
-    uuid id_;
+    std::string id_;
+    std::unique_ptr<User> user_;
     room_ptr room_;
+
     std::string nickname_;
-    access_options a_opts_{};
+    access_options a_opts_;
 
     stream_ptr ws_;
     beast::flat_buffer buffer_;

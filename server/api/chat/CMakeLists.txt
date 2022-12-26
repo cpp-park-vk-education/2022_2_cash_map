@@ -1,7 +1,0 @@
-project(chat)
-
-file(GLOB SOURCES "src/*")
-
-add_library(${PROJECT_NAME} INTERFACE)
-
-target_include_directories(${PROJECT_NAME} INTERFACE include)

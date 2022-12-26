@@ -3,25 +3,42 @@
 #include <utility>
 
 #include "handler.h"
+#include "ws_session.hpp"
+#include "user_session.h"
 
-Viewer::Viewer(stream_ptr &&ws, uuid&& id, std::string nickname, room_ptr&& room):
-        id_(std::forward<uuid>(id)),
+Viewer::Viewer(stream_ptr &&ws, user_ptr&& user, room_ptr&& room):
+        user_(std::move(user)),
         room_(std::move(room)),
-        nickname_(std::move(nickname)),
         ws_(std::move(ws))
-{}
+{
+    id_ = user_->get_id();
+    nickname_ = user_->get_nick();
+}
 
-Viewer::Viewer(stream_ptr &&ws, uuid &&id, access_options a_opts, std::string nickname,room_ptr&& room):
-        id_(std::forward<uuid>(id)),
+Viewer::Viewer(stream_ptr &&ws, access_options a_opts, user_ptr&& user, room_ptr&& room):
+        user_(std::move(user)),
         room_(std::move(room)),
-        nickname_(std::move(nickname)),
-        a_opts_(a_opts),
-        ws_(std::move(ws))
+        ws_(std::move(ws)),
+
+        a_opts_(a_opts)
+{
+    id_ = user_->get_id();
+    nickname_ = user_->get_nick();
+}
+
+Viewer::Viewer(stream_ptr &&ws, std::string &&id, std::string &&nick, room_ptr&& room) :
+    id_(id),
+    nickname_(std::move(nick)),
+
+    user_(user_ptr(nullptr)),
+    room_(std::move(room)),
+    ws_(std::move(ws))
 {}
 
 Viewer::~Viewer(){
     std::cout << "[viewer destructor]\n";
-    room_->leave(id_, nickname_);
+    if(room_)
+        room_->leave(id_, nickname_);
 }
 
 
@@ -41,14 +58,17 @@ void Viewer::do_read() {
         auto in = beast::buffers_to_string(self->buffer_.cdata());
         self->buffer_.consume(self->buffer_.size());
         // creates an event loop
-        self->do_read();
-        std::make_unique<handler>(std::move(in), self->shared_from_this(), self->room_)->handle_request();
+        handler(std::move(in), self->shared_from_this(), self->room_).handle_request();
     });
 }
 
 
 void Viewer::do_close() {
-    ws_->close("");
+    if(user_){
+        std::make_shared<user_session>(std::move(ws_), std::move(user_), room_->get_state())->do_read();
+        return;
+    }
+    std::make_shared<ws_session>(std::move(ws_), room_->get_state())->do_read();
 }
 
 void Viewer::send_message(const std::string & msg) {
@@ -76,7 +96,7 @@ void Viewer::on_write(error_code ec) {
     }
 }
 
-uuid Viewer::get_id() const {
+std::string Viewer::get_id() const {
     return id_;
 }
 
