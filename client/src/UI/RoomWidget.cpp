@@ -30,7 +30,7 @@ RoomWidget::RoomWidget(Room *room, QWidget *parent) : QWidget(parent),
     manager = new VideoRoomManager(room, watcher);
     chatManager = new RoomChatManager();
 
-    connect(manager, SIGNAL(updatedWebView(QWebEngineView *)), this, SLOT(updateWebView(QWebEngineView *)));
+    connect(manager, SIGNAL(updatedWebView(QWebEngineView *, const QString &)), this, SLOT(updateWebView(QWebEngineView *, const QString &)));
 
     ui->videoWatcherStackedWidget->addWidget(webView);
     ui->videoWatcherStackedWidget->setCurrentWidget(webView);
@@ -72,11 +72,17 @@ void RoomWidget::changeWatcher(bool checked) {
     }
 }
 
-void RoomWidget::updateWebView(QWebEngineView *newView) {
+void RoomWidget::updateWebView(QWebEngineView *newView, const QString &watcherType) {
     webView = newView;
     ui->videoWatcherStackedWidget->addWidget(newView);
     ui->videoWatcherStackedWidget->setCurrentWidget(newView);
     connect(webView, SIGNAL(playerStateMightChanged()), manager, SLOT(checkRoomState()));
+
+    if (watcherType == "youtube") {
+        ui->youtubeButton->setChecked(true);
+    } else if (watcherType == "rutube") {
+       ui->rutubeButton->setChecked(true);
+    }
 }
 
 void RoomWidget::askForSync() {

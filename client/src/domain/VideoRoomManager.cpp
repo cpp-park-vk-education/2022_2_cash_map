@@ -69,7 +69,7 @@ void VideoRoomManager::changeWatcher(const QString &wactherType) {
     room->setSource("");
 
     startState = watcher->getState();
-    emit updatedWebView(view);
+    emit updatedWebView(view, wactherType);
 }
 
 void VideoRoomManager::changeWatcher(const QVariantMap &request) {
@@ -86,7 +86,7 @@ void VideoRoomManager::changeWatcher(const QVariantMap &request) {
         startState = watcher->getState();
         room->setService(service);
         room->setSource("");
-        emit updatedWebView(view);
+        emit updatedWebView(view, service);
     }
 }
 

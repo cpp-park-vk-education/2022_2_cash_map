@@ -51,7 +51,7 @@ signals:
     void memberLeaved();
     void newMember();
     void updateMemebersSyncStatus();
-    void updatedWebView(QWebEngineView *);
+    void updatedWebView(QWebEngineView *, const QString &);
 };
 
 #endif // ROOMMANAGER_H
