@@ -14,21 +14,21 @@ void YoutubeWatcher::handleLoading(int loaded_percent) {
 }
 
 YoutubeWatcher::YoutubeWatcher(QWebEngineView *_view) : urlWasSetted(false), view(_view) {
-//    view->setWindowTitle("Watch Up Youtube player");
-//    view->settings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
-//    view->settings()->setAttribute(QWebEngineSettings::FullScreenSupportEnabled, true);
-//    view->settings()->setAttribute(QWebEngineSettings::AllowRunningInsecureContent, true);
-//    view->settings()->setAttribute(QWebEngineSettings::SpatialNavigationEnabled, true);
-//    view->settings()->setAttribute(QWebEngineSettings::JavascriptEnabled, true);
-//    view->settings()->setAttribute(QWebEngineSettings::JavascriptCanOpenWindows, true);
-//    view->settings()->setAttribute(QWebEngineSettings::AllowWindowActivationFromJavaScript, true);
-//    view->settings()->setAttribute(QWebEngineSettings::PlaybackRequiresUserGesture, false);
-//    view->settings()->setAttribute(QWebEngineSettings::HyperlinkAuditingEnabled, false);
+    view->setWindowTitle("Watch Up Youtube player");
+    view->settings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
+    view->settings()->setAttribute(QWebEngineSettings::FullScreenSupportEnabled, true);
+    view->settings()->setAttribute(QWebEngineSettings::AllowRunningInsecureContent, true);
+    view->settings()->setAttribute(QWebEngineSettings::SpatialNavigationEnabled, true);
+    view->settings()->setAttribute(QWebEngineSettings::JavascriptEnabled, true);
+    view->settings()->setAttribute(QWebEngineSettings::JavascriptCanOpenWindows, true);
+    view->settings()->setAttribute(QWebEngineSettings::AllowWindowActivationFromJavaScript, true);
+    view->settings()->setAttribute(QWebEngineSettings::PlaybackRequiresUserGesture, false);
+    view->settings()->setAttribute(QWebEngineSettings::HyperlinkAuditingEnabled, false);
 
-//    webPage = new QWebEnginePage();
-//    view->setPage(webPage);
+    webPage = new QWebEnginePage();
+    view->setPage(webPage);
 
-//    QObject::connect(view, &QWebEngineView::loadProgress, this, &YoutubeWatcher::handleLoading);
+    QObject::connect(view, &QWebEngineView::loadProgress, this, &YoutubeWatcher::handleLoading);
 }
 
 YoutubeWatcher::YoutubeWatcher(IVideoWatcher &&watcher) {

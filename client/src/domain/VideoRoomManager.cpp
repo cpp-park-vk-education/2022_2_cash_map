@@ -67,6 +67,8 @@ void VideoRoomManager::changeWatcher(const QString &wactherType) {
     networkManager->sendServiceChangedRequest(wactherType);
     room->setService(wactherType);
     room->setSource("");
+    room->setPlayingState(false);
+
 
     startState = watcher->getState();
     emit updatedWebView(view, wactherType);
@@ -153,8 +155,8 @@ void VideoRoomManager::startWatching(const QVariantMap &response) {
         watcher->togglePlay();
         startState.playing = true;
     } else if (response["code"].toString() != "200") {
-        watcher->togglePlay();
-        startState.playing = false;
+//        watcher->togglePlay();
+        startState.playing = true;
     }
 }
 
@@ -163,8 +165,8 @@ void VideoRoomManager::stopWatching(const QVariantMap &response) {
         watcher->togglePlay();
         startState.playing = false;
     } else if (response["code"].toString() != "200") {
-        watcher->togglePlay();
-        startState.playing = true;
+//        watcher->togglePlay();
+        startState.playing = false;
     }
 
 }
@@ -212,6 +214,11 @@ void VideoRoomManager::rewindTo(const QVariantMap &response) {
 
 void VideoRoomManager::sync() {
     networkManager->sendRewindRequest(convertTimeStampToString(watcher->getCurrentTime()));
+    if (watcher->isPlaying()) {
+        networkManager->sendPlayRequest();
+    } else {
+        networkManager->sendPauseRequest(convertTimeStampToString(watcher->getCurrentTime()));
+    }
 }
 
 void VideoRoomManager::kickMember(RoomMember *) {
