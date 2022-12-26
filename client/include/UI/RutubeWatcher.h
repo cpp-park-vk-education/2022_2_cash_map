@@ -12,6 +12,7 @@ private:
     void initPlayerAfterSetContent();
 public:
     explicit RutubeWatcher(QWebEngineView *_view);
+    RutubeWatcher(IVideoWatcher &&watcher);
     ~RutubeWatcher();
     void togglePlay() override;
     void setCurrentTime(double time) override;
@@ -27,6 +28,9 @@ public:
 
     QString getLinkByVideoId(const QString& id) override;
     QString getVideoIdByRawLink(const QUrl& url) override;
+
+    QWebEngineView *getView() override;
+    void setView(QWebEngineView *view) override;
 
 private:
     QWebEngineView *view = nullptr;

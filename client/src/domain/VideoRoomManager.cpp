@@ -37,9 +37,12 @@ VideoRoomManager::VideoRoomManager(Room *room, IVideoWatcher *watcher) : startSt
     }
 }
 
-void VideoRoomManager::changeWatcher(IVideoWatcher *newWatcher, const QString &wactherType) {
-    delete watcher;
-    watcher = newWatcher;
+void VideoRoomManager::changeWatcher(const QString &wactherType) {
+    if (wactherType == "youtube") {
+        watcher = new YoutubeWatcher(std::move(*watcher));
+    } else if (wactherType == "rutube") {
+        watcher = new RutubeWatcher(std::move(*watcher));
+    }
 
     networkManager->sendServiceChangedRequest(wactherType);
     room->setService(wactherType);
@@ -49,18 +52,15 @@ void VideoRoomManager::changeWatcher(IVideoWatcher *newWatcher, const QString &w
 
 void VideoRoomManager::changeWatcher(const QVariantMap &request) {
     if (request["code"].toString() == "") {
-        delete watcher;
         QString service = request["service"].toString();
-        QWebEngineView *view = new CustomWebView();
         if (service == "rutube") {
-            watcher = new RutubeWatcher(view);
+            watcher = new RutubeWatcher(std::move(*watcher));
         } else {
-            watcher = new YoutubeWatcher(view);
+            watcher = new YoutubeWatcher(std::move(*watcher));
         }
 
         startState = watcher->getState();
         room->setService(service);
-        emit changeWebViewWidget(view, service);
     }
 }
 

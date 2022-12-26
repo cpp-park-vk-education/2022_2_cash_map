@@ -14,7 +14,7 @@ public:
 
     ~VideoRoomManager();
 
-    virtual void changeWatcher(IVideoWatcher *newWatcher, const QString &wactherType) override;
+    virtual void changeWatcher(const QString &wactherType) override;
 
     virtual void changeVideoContent(const QString &url) override;
 

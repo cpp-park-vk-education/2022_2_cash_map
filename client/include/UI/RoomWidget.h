@@ -21,7 +21,6 @@ public:
 
     void rejoin();
 public slots:
-    void setNewWebView(QWebEngineView *view, const QString &service);
     void changeWatcher(bool checked);
     void askForSync();
     void updateChat(Message*);

@@ -12,7 +12,7 @@ class RoomManager : public QObject {
 public:
     virtual ~RoomManager() = default;
 
-    virtual void changeWatcher(IVideoWatcher *newWatcher, const QString &wactherType) = 0;
+    virtual void changeWatcher(const QString &wactherType) = 0;
 
     virtual void reconnect() = 0;
 
@@ -50,7 +50,6 @@ signals:
     void memberLeaved();
     void newMember();
     void updateMemebersSyncStatus();
-    void changeWebViewWidget(QWebEngineView *, const QString &);
 };
 
 #endif // ROOMMANAGER_H

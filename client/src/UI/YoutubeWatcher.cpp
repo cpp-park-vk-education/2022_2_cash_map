@@ -31,6 +31,17 @@ YoutubeWatcher::YoutubeWatcher(QWebEngineView *_view) : urlWasSetted(false), vie
     QObject::connect(view, &QWebEngineView::loadProgress, this, &YoutubeWatcher::handleLoading);
 }
 
+YoutubeWatcher::YoutubeWatcher(IVideoWatcher &&watcher) {
+    this->view = watcher.getView();
+    watcher.setView(nullptr);
+    urlWasSetted = false;
+
+    QWebEnginePage *webPage = new QWebEnginePage();
+    view->setPage(webPage);
+
+    QObject::connect(view, &QWebEngineView::loadProgress, this, &YoutubeWatcher::handleLoading);
+}
+
 void YoutubeWatcher::togglePlay() {
     if (!urlWasSetted)
         throw std::runtime_error("Can't operate with Youtube Watcher before setting url of video");
@@ -130,6 +141,14 @@ QString YoutubeWatcher::getVideoIdByRawLink(const QUrl& url) {
         throw std::runtime_error("Wrong video link, doesn't have 'v' query parameter");
 
     return query.queryItemValue("v");
+}
+
+QWebEngineView *YoutubeWatcher::getView() {
+    return view;
+}
+
+void YoutubeWatcher::setView(QWebEngineView *view) {
+    this->view = view;
 }
 
 

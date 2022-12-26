@@ -23,6 +23,18 @@ RutubeWatcher::RutubeWatcher(QWebEngineView *_view) : view(_view), urlWasSetted(
     QObject::connect(view, &QWebEngineView::loadProgress, this, &RutubeWatcher::handleLoading);
 }
 
+RutubeWatcher::RutubeWatcher(IVideoWatcher &&watcher) {
+    this->view = watcher.getView();
+    watcher.setView(nullptr);
+
+    urlWasSetted = false;
+
+    QWebEnginePage *webPage = new QWebEnginePage();
+    view->setPage(webPage);
+
+    QObject::connect(view, &QWebEngineView::loadProgress, this, &RutubeWatcher::handleLoading);
+}
+
 void RutubeWatcher::handleLoading(int loaded_percent) {
     if (loaded_percent == 100) {
         qDebug() << "READY TO WATCH!";
@@ -139,6 +151,14 @@ QString RutubeWatcher::getVideoIdByRawLink(const QUrl& url) {
     if (parts_of_url.size() < 2)
         throw std::runtime_error("bad rutube video url.");
     return parts_of_url.at(1);
+}
+
+QWebEngineView *RutubeWatcher::getView() {
+    return view;
+}
+
+void RutubeWatcher::setView(QWebEngineView *view) {
+    this->view = view;
 }
 
 RutubeWatcher::~RutubeWatcher() {

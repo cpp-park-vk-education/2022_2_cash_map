@@ -52,6 +52,10 @@ class IVideoWatcher : public QObject {
 
     virtual QString getVideoIdByRawLink(const QUrl& url) = 0;
 
+    virtual QWebEngineView *getView() = 0;
+
+    virtual void setView(QWebEngineView *) = 0;
+
 signals:
     void ReadyToWatch(bool ok);
 };
@@ -61,6 +65,7 @@ private:
     void handleLoading(int progress_percent);
 public:
     explicit YoutubeWatcher(QWebEngineView *_view);
+    YoutubeWatcher(IVideoWatcher &&watcher);
     ~YoutubeWatcher();
     /// @brief Переключает режимы PLAY / PAUSE видео
     virtual void togglePlay() override;
@@ -97,6 +102,9 @@ public:
     virtual QString getLinkByVideoId(const QString& id) override;
 
     virtual QString getVideoIdByRawLink(const QUrl& url) override;
+
+    virtual QWebEngineView *getView() override;
+    virtual void setView(QWebEngineView *view) override;
 
 private:
     bool urlWasSetted = false;

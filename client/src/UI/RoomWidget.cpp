@@ -26,6 +26,7 @@ RoomWidget::RoomWidget(Room *room, QWidget *parent) : QWidget(parent),
         watcher = new YoutubeWatcher(webView);
         ui->youtubeButton->setChecked(true);
     }
+
     manager = new VideoRoomManager(room, watcher);
     chatManager = new RoomChatManager();
 
@@ -61,22 +62,14 @@ RoomWidget::RoomWidget(Room *room, QWidget *parent) : QWidget(parent),
 void RoomWidget::changeWatcher(bool checked) {
     if (checked) {
         QObject *senderObject = sender();
-        QWebEngineView *view = new CustomWebView();
-        IVideoWatcher *watcher = nullptr;
         QString watcherType;
         if (senderObject == ui->youtubeButton) {
-            watcher = new YoutubeWatcher(view);
             watcherType = "youtube";
         } else if (senderObject == ui->rutubeButton) {
-            watcher = new RutubeWatcher(view);
             watcherType = "rutube";
         }
 
-        manager->changeWatcher(watcher, watcherType);
-        ui->videoWatcherStackedWidget->removeWidget(webView);
-        ui->videoWatcherStackedWidget->addWidget(view);
-        ui->videoWatcherStackedWidget->setCurrentWidget(view);
-        webView = view;
+        manager->changeWatcher(watcherType);
     }
 }
 
@@ -84,17 +77,6 @@ void RoomWidget::askForSync() {
     manager->sync();
 }
 
-void RoomWidget::setNewWebView(QWebEngineView *view, const QString &service) {
-    ui->videoWatcherStackedWidget->removeWidget(webView);
-    ui->videoWatcherStackedWidget->addWidget(view);
-    ui->videoWatcherStackedWidget->setCurrentWidget(view);
-    webView = view;
-    if (service == "rutube") {
-        ui->rutubeButton->setChecked(true);
-    } else if (service == "youtube") {
-        ui->youtubeButton->setChecked(true);
-    }
-}
 
 void RoomWidget::updateChat(Message* message) {
     ChatMessageWidget *messageWidget = new ChatMessageWidget(message->messageSender(), message->messageContent(), message->messageTime());
