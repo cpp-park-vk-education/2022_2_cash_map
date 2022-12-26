@@ -24,13 +24,24 @@ RutubeWatcher::RutubeWatcher(QWebEngineView *_view) : view(_view), urlWasSetted(
 }
 
 RutubeWatcher::RutubeWatcher(IVideoWatcher &&watcher) {
-    this->view = watcher.getView();
-    watcher.setView(nullptr);
-    this->webPage = watcher.getWebPage();
-    watcher.setWebPage(nullptr);
-    urlWasSetted = false;
+//    this->view = watcher.getView();
+//    watcher.setView(nullptr);
+//    this->webPage = watcher.getWebPage();
+//    watcher.setWebPage(nullptr);
+//    urlWasSetted = false;
+//    view->settings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
+//    view->settings()->setAttribute(QWebEngineSettings::FullScreenSupportEnabled, true);
+//    view->settings()->setAttribute(QWebEngineSettings::AllowRunningInsecureContent, true);
+//    view->settings()->setAttribute(QWebEngineSettings::SpatialNavigationEnabled, true);
+//    view->settings()->setAttribute(QWebEngineSettings::JavascriptEnabled, true);
+//    view->settings()->setAttribute(QWebEngineSettings::JavascriptCanOpenWindows, true);
+//    view->settings()->setAttribute(QWebEngineSettings::AllowWindowActivationFromJavaScript, true);
+//    view->settings()->setAttribute(QWebEngineSettings::PlaybackRequiresUserGesture, false);
+//    view->settings()->setAttribute(QWebEngineSettings::HyperlinkAuditingEnabled, false);
+//    view->settings()->setAttribute(QWebEngineSettings::LocalContentCanAccessRemoteUrls, true);
+//    view->settings()->setAttribute(QWebEngineSettings::LocalContentCanAccessFileUrls, true);
 
-    QObject::connect(view, &QWebEngineView::loadProgress, this, &RutubeWatcher::handleLoading);
+//    QObject::connect(view, &QWebEngineView::loadProgress, this, &RutubeWatcher::handleLoading);
 }
 
 void RutubeWatcher::handleLoading(int loaded_percent) {
@@ -169,5 +180,5 @@ void RutubeWatcher::setWebPage(QWebEnginePage *view) {
 
 RutubeWatcher::~RutubeWatcher() {
     delete view;
-    QWebEnginePage *webPage;
+    delete webPage;
 }

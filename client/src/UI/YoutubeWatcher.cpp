@@ -8,27 +8,27 @@
 void YoutubeWatcher::handleLoading(int loaded_percent) {
     if (loaded_percent == 100) {
         qDebug() << "READY TO WATCH!";
-        emit ReadyToWatch(true);
         togglePlay();
+        emit ReadyToWatch(true);
     }
 }
 
 YoutubeWatcher::YoutubeWatcher(QWebEngineView *_view) : urlWasSetted(false), view(_view) {
-    view->setWindowTitle("Watch Up Youtube player");
-    view->settings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
-    view->settings()->setAttribute(QWebEngineSettings::FullScreenSupportEnabled, true);
-    view->settings()->setAttribute(QWebEngineSettings::AllowRunningInsecureContent, true);
-    view->settings()->setAttribute(QWebEngineSettings::SpatialNavigationEnabled, true);
-    view->settings()->setAttribute(QWebEngineSettings::JavascriptEnabled, true);
-    view->settings()->setAttribute(QWebEngineSettings::JavascriptCanOpenWindows, true);
-    view->settings()->setAttribute(QWebEngineSettings::AllowWindowActivationFromJavaScript, true);
-    view->settings()->setAttribute(QWebEngineSettings::PlaybackRequiresUserGesture, false);
-    view->settings()->setAttribute(QWebEngineSettings::HyperlinkAuditingEnabled, false);
+//    view->setWindowTitle("Watch Up Youtube player");
+//    view->settings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
+//    view->settings()->setAttribute(QWebEngineSettings::FullScreenSupportEnabled, true);
+//    view->settings()->setAttribute(QWebEngineSettings::AllowRunningInsecureContent, true);
+//    view->settings()->setAttribute(QWebEngineSettings::SpatialNavigationEnabled, true);
+//    view->settings()->setAttribute(QWebEngineSettings::JavascriptEnabled, true);
+//    view->settings()->setAttribute(QWebEngineSettings::JavascriptCanOpenWindows, true);
+//    view->settings()->setAttribute(QWebEngineSettings::AllowWindowActivationFromJavaScript, true);
+//    view->settings()->setAttribute(QWebEngineSettings::PlaybackRequiresUserGesture, false);
+//    view->settings()->setAttribute(QWebEngineSettings::HyperlinkAuditingEnabled, false);
 
-    webPage = new QWebEnginePage();
-    view->setPage(webPage);
+//    webPage = new QWebEnginePage();
+//    view->setPage(webPage);
 
-    QObject::connect(view, &QWebEngineView::loadProgress, this, &YoutubeWatcher::handleLoading);
+//    QObject::connect(view, &QWebEngineView::loadProgress, this, &YoutubeWatcher::handleLoading);
 }
 
 YoutubeWatcher::YoutubeWatcher(IVideoWatcher &&watcher) {
@@ -36,6 +36,9 @@ YoutubeWatcher::YoutubeWatcher(IVideoWatcher &&watcher) {
     watcher.setView(nullptr);
     this->webPage = watcher.getWebPage();
     watcher.setWebPage(nullptr);
+    delete webPage;
+    webPage = new QWebEnginePage();
+    view->setPage(webPage);
     view->settings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
     view->settings()->setAttribute(QWebEngineSettings::FullScreenSupportEnabled, true);
     view->settings()->setAttribute(QWebEngineSettings::AllowRunningInsecureContent, true);
@@ -48,7 +51,7 @@ YoutubeWatcher::YoutubeWatcher(IVideoWatcher &&watcher) {
 
 
 
-    urlWasSetted = false;
+    urlWasSetted = true;
 
     QObject::connect(view, &QWebEngineView::loadProgress, this, &YoutubeWatcher::handleLoading);
 }

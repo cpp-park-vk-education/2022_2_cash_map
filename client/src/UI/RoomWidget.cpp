@@ -30,6 +30,8 @@ RoomWidget::RoomWidget(Room *room, QWidget *parent) : QWidget(parent),
     manager = new VideoRoomManager(room, watcher);
     chatManager = new RoomChatManager();
 
+    connect(manager, SIGNAL(updatedWebView(QWebEngineView *)), this, SLOT(updateWebView(QWebEngineView *)));
+
     ui->videoWatcherStackedWidget->addWidget(webView);
     ui->videoWatcherStackedWidget->setCurrentWidget(webView);
 
@@ -39,8 +41,6 @@ RoomWidget::RoomWidget(Room *room, QWidget *parent) : QWidget(parent),
     connect(ui->syncButton, SIGNAL(clicked()), this, SLOT(askForSync()));
 
     connect(ui->leaveButton, SIGNAL(clicked()), this, SLOT(leaveRoom()));
-
-    connect(webView, SIGNAL(playerStateMightChanged()), manager, SLOT(checkRoomState()));
 
     connect(ui->copyLinkButton, SIGNAL(clicked()), this, SLOT(copyRoomId()));
 
@@ -52,7 +52,6 @@ RoomWidget::RoomWidget(Room *room, QWidget *parent) : QWidget(parent),
 
     connect(chatManager, SIGNAL(messageReceived(Message*)), this, SLOT(updateChat(Message*)));
 
-    connect(manager, SIGNAL(changeWebViewWidget(QWebEngineView *, const QString &)), this, SLOT(setNewWebView(QWebEngineView *, const QString &)));
 
     updateMembersList();
 
@@ -71,6 +70,13 @@ void RoomWidget::changeWatcher(bool checked) {
 
         manager->changeWatcher(watcherType);
     }
+}
+
+void RoomWidget::updateWebView(QWebEngineView *newView) {
+    webView = newView;
+    ui->videoWatcherStackedWidget->addWidget(newView);
+    ui->videoWatcherStackedWidget->setCurrentWidget(newView);
+    connect(webView, SIGNAL(playerStateMightChanged()), manager, SLOT(checkRoomState()));
 }
 
 void RoomWidget::askForSync() {

@@ -34,6 +34,7 @@ public:
 
     virtual void sync() = 0;
 public slots:
+    virtual void processVideoLoadFinishing(bool) = 0;
     virtual void changeWatcher(const QVariantMap &request) = 0;
     virtual void updateRoomState() = 0;
     virtual void rewindTo(const QVariantMap &) = 0;
@@ -50,6 +51,7 @@ signals:
     void memberLeaved();
     void newMember();
     void updateMemebersSyncStatus();
+    void updatedWebView(QWebEngineView *);
 };
 
 #endif // ROOMMANAGER_H

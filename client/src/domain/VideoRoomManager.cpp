@@ -10,6 +10,9 @@ VideoRoomManager::VideoRoomManager(Room *room, IVideoWatcher *watcher) : startSt
                                                               networkManager(NetworkManager::getInstance()),
                                                               room(room) {
 
+    connect(watcher->getView(), SIGNAL(playerStateMightChanged()), this, SLOT(checkRoomState()));
+
+    connect(watcher, SIGNAL(ReadyToWatch(bool)), this, SLOT(processVideoLoadFinishing(bool)));
 
     connect(networkManager, SIGNAL(newMemberSignal(const QVariantMap &)), this, SLOT(acceptNewMember(const QVariantMap &)));
     connect(networkManager, SIGNAL(leaveSignal(const QVariantMap &)), this, SLOT(removeMember(const QVariantMap &)));
@@ -31,36 +34,59 @@ VideoRoomManager::VideoRoomManager(Room *room, IVideoWatcher *watcher) : startSt
     timer.start(3000);
 
     if (room->getSource() != "") {
-        QString id = watcher->getVideoIdByRawLink(room->getSource());
-        QString link = watcher->getLinkByVideoId(id);
-        watcher->setContentPath(link);
+        try {
+            QString id = watcher->getVideoIdByRawLink(room->getSource());
+            QString link = watcher->getLinkByVideoId(id);
+            watcher->setContentPath(link);
+        } catch (std::runtime_error err) {
+            watcher->setContentPath("");
+            qDebug() << "[LOGGER] incorrect url";
+        }
+    }
+}
+
+void VideoRoomManager::processVideoLoadFinishing(bool) {
+    if (room->getPlayingState() && !watcher->isPlaying()) {
+        watcher->togglePlay();
+        startState.playing = true;
+    } else if (!room->getPlayingState() && watcher->isPlaying()) {
+        watcher->togglePlay();
+        startState.playing = false;
     }
 }
 
 void VideoRoomManager::changeWatcher(const QString &wactherType) {
+    QWebEngineView *view = new CustomWebView();
+    delete watcher;
     if (wactherType == "youtube") {
-        watcher = new YoutubeWatcher(std::move(*watcher));
+        watcher = new YoutubeWatcher(view);
     } else if (wactherType == "rutube") {
-        watcher = new RutubeWatcher(std::move(*watcher));
+        watcher = new RutubeWatcher(view);
     }
 
     networkManager->sendServiceChangedRequest(wactherType);
     room->setService(wactherType);
+    room->setSource("");
 
     startState = watcher->getState();
+    emit updatedWebView(view);
 }
 
 void VideoRoomManager::changeWatcher(const QVariantMap &request) {
     if (request["code"].toString() == "") {
         QString service = request["service"].toString();
+        QWebEngineView *view = new CustomWebView();
+        delete watcher;
         if (service == "rutube") {
-            watcher = new RutubeWatcher(std::move(*watcher));
+            watcher = new RutubeWatcher(view);
         } else {
-            watcher = new YoutubeWatcher(std::move(*watcher));
+            watcher = new YoutubeWatcher(view);
         }
 
         startState = watcher->getState();
         room->setService(service);
+        room->setSource("");
+        emit updatedWebView(view);
     }
 }
 
@@ -146,10 +172,15 @@ void VideoRoomManager::stopWatching(const QVariantMap &response) {
 void VideoRoomManager::changeVideoContent(const QVariantMap &response) {
     // требуется проверка валидности урла
     if (response["code"].toString() != "200") {
-        QString src = response["src"].toString();
-        QString id = watcher->getVideoIdByRawLink(src);
-        QString link = watcher->getLinkByVideoId(id);
-        watcher->setContentPath(link);
+        try {
+            QString src = response["src"].toString();
+            QString id = watcher->getVideoIdByRawLink(src);
+            QString link = watcher->getLinkByVideoId(id);
+            watcher->setContentPath(link);
+        } catch (std::runtime_error err) {
+            watcher->setContentPath("");
+            qDebug() << "[LOGGER] incorrect url";
+        }
 
         startState.playing = false;
         startState.timestamp = 0;
@@ -159,9 +190,14 @@ void VideoRoomManager::changeVideoContent(const QVariantMap &response) {
 void VideoRoomManager::changeVideoContent(const QString &url) {
     // требуется проверка валидности урла
     networkManager->sendContentChangedRequest(url);
-    QString id = watcher->getVideoIdByRawLink(url);
-    QString link = watcher->getLinkByVideoId(id);
-    watcher->setContentPath(link);
+    try {
+        QString id = watcher->getVideoIdByRawLink(url);
+        QString link = watcher->getLinkByVideoId(id);
+        watcher->setContentPath(link);
+    } catch (std::runtime_error err) {
+        watcher->setContentPath("");
+        qDebug() << "[LOGGER] incorrect url";
+    }
 
     startState.playing = false;
     startState.timestamp = 0;
@@ -169,7 +205,6 @@ void VideoRoomManager::changeVideoContent(const QString &url) {
 
 void VideoRoomManager::rewindTo(const QVariantMap &response) {
     int timeStamp = convertTimeStampToInt(response["time"].toString());
-    qDebug() << "REWIND TO " << timeStamp;
     if (response["code"].toString() == "") {
         watcher->setCurrentTime(timeStamp);
     }

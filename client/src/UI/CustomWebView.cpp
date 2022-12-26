@@ -6,6 +6,7 @@ CustomWebView::CustomWebView(QWidget *parent) : QWebEngineView(parent), childObj
 }
 
 void CustomWebView::sendSignal() {
+    qDebug() << "playerStateMightChanged";
     emit playerStateMightChanged();
     timer->stop();
 }
@@ -26,13 +27,14 @@ bool CustomWebView::event(QEvent* event) {
 
 bool CustomWebView::eventFilter(QObject *obj, QEvent *ev) {
     if (obj == childObj && ev->type() == QEvent::MouseButtonRelease) {
+        qDebug() << ev->type();
         bool result =  QWebEngineView::eventFilter(obj, ev);
-        timer->start(300);
+        timer->start(400);
         return result;
     } else if (obj == childObj && ev->type() == QEvent::KeyPress) {
         qDebug() << ev->type();
         bool result =  QWebEngineView::eventFilter(obj, ev);
-        timer->start(300);
+        timer->start(400);
         return result;
     }
 

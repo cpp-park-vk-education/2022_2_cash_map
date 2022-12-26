@@ -32,6 +32,7 @@ public:
 
     virtual void sync() override;
 public slots:
+    virtual void processVideoLoadFinishing(bool) override;
     virtual void updateRoomState() override;
     virtual void changeWatcher(const QVariantMap &request) override;
     virtual void rewindTo(const QVariantMap &) override;

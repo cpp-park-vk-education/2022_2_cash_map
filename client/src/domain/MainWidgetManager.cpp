@@ -36,13 +36,16 @@ Room *MainWidgetManager::createRoomObject(const QVariantMap &response) {
                                                  response["time"].toString());
         members.push_back(member);
     }
+
+    bool state = response["state"].toString() == "true" ? true : false;
+    qDebug() << "STATE!!!: " << state;
     QString service = response["service"].toString() != "" ? response["service"].toString() : "youtube";
     QString timeStamp = response["time"].toString() != "" ? response["time"].toString() : "00:00:00";
     Room *room = new VideoRoom(new VideoRoomMember(User::getInstance()->getUserName(), User::getInstance()->getLogin(), timeStamp),
                                                    response["room_id"].toString(),
                                                    members, response["src"].toString(),
                                                    service,
-                                                   response["state"].toBool());
+                                                   state);
     return room;
 }
 
