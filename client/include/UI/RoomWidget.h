@@ -21,6 +21,8 @@ public:
 
     void rejoin();
 public slots:
+    void setNewWebView(QWebEngineView *view, const QString &service);
+    void changeWatcher(bool checked);
     void askForSync();
     void updateChat(Message*);
     void sendMessage();
@@ -37,7 +39,7 @@ private:
     ChatManager *chatManager;
 
     IVideoWatcher *watcher;
-    CustomWebView *webView;
+    QWebEngineView *webView;
 
 };
 

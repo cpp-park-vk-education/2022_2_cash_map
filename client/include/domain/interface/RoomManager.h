@@ -1,6 +1,7 @@
 #ifndef ROOMMANAGER_H
 #define ROOMMANAGER_H
 
+#include "include/UI/YoutubeWatcher.h"
 #include "include/domain/models/interface/RoomMember.h"
 
 #include <QObject>
@@ -10,6 +11,8 @@ class RoomManager : public QObject {
     Q_OBJECT
 public:
     virtual ~RoomManager() = default;
+
+    virtual void changeWatcher(IVideoWatcher *newWatcher, const QString &wactherType) = 0;
 
     virtual void reconnect() = 0;
 
@@ -31,6 +34,7 @@ public:
 
     virtual void sync() = 0;
 public slots:
+    virtual void changeWatcher(const QVariantMap &request) = 0;
     virtual void updateRoomState() = 0;
     virtual void rewindTo(const QVariantMap &) = 0;
     virtual void checkRoomState() = 0;
@@ -46,6 +50,7 @@ signals:
     void memberLeaved();
     void newMember();
     void updateMemebersSyncStatus();
+    void changeWebViewWidget(QWebEngineView *, const QString &);
 };
 
 #endif // ROOMMANAGER_H

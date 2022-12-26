@@ -14,8 +14,8 @@ NetworkManager::NetworkManager(QObject *parent) : QObject(parent),
 }
 
 
-void NetworkManager::sendCreateRoomRequest(const QString &videoId) {
-    QString request = "{\"type\": \"create\", \"src\": \"" + videoId + "\"}";
+void NetworkManager::sendCreateRoomRequest(const QString &videoId, const QString &service) {
+    QString request = "{\"type\": \"create\", \"src\": \"" + videoId + "\", \"service\": \"" + service + "\"}";
     client->sendRequest(request);
 }
 
@@ -79,6 +79,11 @@ void NetworkManager::sendPongRequest(const QString &timeStamp, const QString &se
     client->sendRequest(request);
 }
 
+void NetworkManager::sendServiceChangedRequest(const QString &service) {
+    QString request = "{\"type\": \"s_service\", \"service\": \"" + service + "\"}";
+    client->sendRequest(request);
+}
+
 void NetworkManager::handleResponse(const QString &message) {
     // обращаемся к сериалайзеру
     QByteArray json_bytes = message.toUtf8();
@@ -115,6 +120,8 @@ void NetworkManager::handleResponse(const QString &message) {
         emit pingSignal(map);
     } else if (map["type"].toString() == "pong") {
         emit pongSignal(map);
+    } else if (map["type"].toString() == "s_service") {
+        emit serviceChangedSignal(map);
     } else if (map["type"].toString() == "invalid") {
         emit invalid();
     }

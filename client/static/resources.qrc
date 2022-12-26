@@ -3,5 +3,8 @@
         <file>icons/youtube_icon.png</file>
         <file>icons/loading.gif</file>
         <file>icons/green point.png</file>
+        <file>icons/rutube_icon.png</file>
+        <file>icons/logo.png</file>
+        <file>icons/logo_2.svg</file>
     </qresource>
 </RCC>

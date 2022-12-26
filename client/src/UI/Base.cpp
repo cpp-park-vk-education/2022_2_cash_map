@@ -11,6 +11,7 @@ Base::Base(QWidget *parent) : QMainWindow(parent),
                               networkManager(NetworkManager::getInstance()) {
 
     ui->setupUi(this);
+    QMainWindow::setWindowIcon(QIcon(":resources/icons/logo_2.svg"));
 
     authManager = createAuthorizationManager();
 

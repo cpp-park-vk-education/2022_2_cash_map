@@ -32,6 +32,45 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
+   <item row="0" column="1" rowspan="5">
+    <widget class="QWidget" name="ChatWidget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+       <horstretch>15</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QListWidget" name="membersListWidget">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>170</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QListWidget" name="chatListWidget"/>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLineEdit" name="messageLineEdit"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="sendMessageButton">
+          <property name="text">
+           <string>Enter</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item row="0" column="0" rowspan="5">
     <widget class="QWidget" name="WatcherWidget" native="true">
      <property name="sizePolicy">
@@ -41,6 +80,35 @@
       </sizepolicy>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_9">
+        <item>
+         <widget class="QRadioButton" name="youtubeButton">
+          <property name="text">
+           <string>Youtube</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normaloff>../icons/youtube_icon.png</normaloff>../icons/youtube_icon.png</iconset>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rutubeButton">
+          <property name="text">
+           <string>Rutube</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normaloff>../icons/rutube_icon.png</normaloff>../icons/rutube_icon.png</iconset>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
       <item>
        <widget class="QStackedWidget" name="videoWatcherStackedWidget">
         <widget class="QWidget" name="page"/>
@@ -77,45 +145,6 @@
          <string>Leave</string>
         </property>
        </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="1" rowspan="5">
-    <widget class="QWidget" name="ChatWidget" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-       <horstretch>15</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QListWidget" name="membersListWidget">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>170</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QListWidget" name="chatListWidget"/>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QLineEdit" name="messageLineEdit"/>
-        </item>
-        <item>
-         <widget class="QPushButton" name="sendMessageButton">
-          <property name="text">
-           <string>Enter</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </item>
      </layout>
     </widget>

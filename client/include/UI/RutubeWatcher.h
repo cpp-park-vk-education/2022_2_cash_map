@@ -11,9 +11,8 @@ private:
     void removeAdverts();
     void initPlayerAfterSetContent();
 public:
-    RutubeWatcher() = delete;
-
     explicit RutubeWatcher(QWebEngineView *_view);
+    ~RutubeWatcher();
     void togglePlay() override;
     void setCurrentTime(double time) override;
     void setCurrentSpeed(double speed) override;

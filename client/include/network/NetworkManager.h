@@ -24,7 +24,7 @@ public:
     ~NetworkManager();
 
 
-    void sendCreateRoomRequest(const QString &videoId);
+    void sendCreateRoomRequest(const QString &videoId, const QString &service = "youtube");
     void sendLeaveRoomRequest();
     void sendJoinRoomRequest(const QString &roomID);
     void sendPlayRequest();
@@ -35,6 +35,8 @@ public:
     void sendAuthRequest(const QString &login, const QString &password);
     void sendRegistrationRequest(const QString &login, const QString &userName, const QString &password);
     void sendLogoutRequest();
+
+    void sendServiceChangedRequest(const QString &service);
 
     void sendMessageRequest(const QString &content);
 
@@ -60,6 +62,7 @@ signals:
     void newMessageSignal(const QVariantMap &);
     void pingSignal(const QVariantMap &);
     void pongSignal(const QVariantMap &);
+    void serviceChangedSignal(const QVariantMap &);
     void invalid();
 private:
     WatchUpServerClient *client;

@@ -20,8 +20,8 @@ public:
 
     void reloadContext();
 
-//    SearchItemCollector *searchCollector;
 public slots:
+
     void openRoom();
 
     void enterRoom();

@@ -4,7 +4,7 @@
 
 
 RutubeWatcher::RutubeWatcher(QWebEngineView *_view) : view(_view), urlWasSetted(false) {
-    view->setWindowTitle("Watch Up Youtube player");
+    view->setWindowTitle("Watch Up Rutube player");
     view->settings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
     view->settings()->setAttribute(QWebEngineSettings::FullScreenSupportEnabled, true);
     view->settings()->setAttribute(QWebEngineSettings::AllowRunningInsecureContent, true);
@@ -27,7 +27,7 @@ void RutubeWatcher::handleLoading(int loaded_percent) {
     if (loaded_percent == 100) {
         qDebug() << "READY TO WATCH!";
         emit ReadyToWatch(true);
-        // initPlayerAfterSetContent();
+        initPlayerAfterSetContent();
     }
 }
 
@@ -139,4 +139,8 @@ QString RutubeWatcher::getVideoIdByRawLink(const QUrl& url) {
     if (parts_of_url.size() < 2)
         throw std::runtime_error("bad rutube video url.");
     return parts_of_url.at(1);
+}
+
+RutubeWatcher::~RutubeWatcher() {
+    delete view;
 }

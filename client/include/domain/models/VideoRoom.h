@@ -10,12 +10,16 @@
 
 class VideoRoom : public Room {
 public:
-    VideoRoom(RoomMember *host, QString roomId, const QList<RoomMember *> &membersList, const QString &source, bool playingState);
+    VideoRoom(RoomMember *host, QString roomId, const QList<RoomMember *> &membersList, const QString &source, const QString &service, bool playingState);
     ~VideoRoom();
     VideoRoom(VideoRoom &room) = default;
     VideoRoom(VideoRoom &&room);
     VideoRoom &operator=(VideoRoom &room) = default;
     VideoRoom &operator=(VideoRoom &&room);
+
+    virtual QString getService() override;
+
+    virtual void setService(const QString &) override;
 
     virtual const QList<RoomMember *> &getMembers() override;
 
@@ -36,6 +40,7 @@ public:
     virtual void addMember(RoomMember *member) override;
 
 private:
+    QString service;
     RoomMember *hostMember;
     QString roomId;
     QString source;

@@ -61,7 +61,7 @@ private:
     void handleLoading(int progress_percent);
 public:
     explicit YoutubeWatcher(QWebEngineView *_view);
-    ~YoutubeWatcher() = default;
+    ~YoutubeWatcher();
     /// @brief Переключает режимы PLAY / PAUSE видео
     virtual void togglePlay() override;
     /// @brief Устанавливает время плеера

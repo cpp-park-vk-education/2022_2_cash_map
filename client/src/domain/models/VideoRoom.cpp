@@ -2,11 +2,12 @@
 
 
 VideoRoom::VideoRoom(RoomMember *host, QString roomId,
-                     const QList<RoomMember *> &membersList, const QString &source, bool playingState) : hostMember(host),
-                                                                                          roomId(roomId),
-                                                                                          membersList(membersList),
-                                                                                          source(source),
-                                                                                          playingState(playingState) {
+                     const QList<RoomMember *> &membersList, const QString &source, const QString &service, bool playingState) : service(service),
+                                                                                                                                  hostMember(host),
+                                                                                                                                  roomId(roomId),
+                                                                                                                                  source(source),
+                                                                                                                                  membersList(membersList),
+                                                                                                                                  playingState(playingState) {
     this->membersList.push_back(host);
 }
 
@@ -60,6 +61,14 @@ bool VideoRoom::getPlayingState() {
 
 void VideoRoom::setPlayingState(bool state) {
     playingState = state;
+}
+
+QString VideoRoom::getService() {
+    return service;
+}
+
+void VideoRoom::setService(const QString &service) {
+    this->service = service;
 }
 
 VideoRoom::~VideoRoom() {

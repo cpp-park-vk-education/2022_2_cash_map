@@ -14,6 +14,8 @@ public:
 
     ~VideoRoomManager();
 
+    virtual void changeWatcher(IVideoWatcher *newWatcher, const QString &wactherType) override;
+
     virtual void changeVideoContent(const QString &url) override;
 
     virtual void reconnect() override;
@@ -31,6 +33,7 @@ public:
     virtual void sync() override;
 public slots:
     virtual void updateRoomState() override;
+    virtual void changeWatcher(const QVariantMap &request) override;
     virtual void rewindTo(const QVariantMap &) override;
     virtual void checkRoomState() override;
     virtual void acceptNewMember(const QVariantMap &) override;

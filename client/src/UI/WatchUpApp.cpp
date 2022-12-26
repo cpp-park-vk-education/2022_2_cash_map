@@ -7,7 +7,6 @@ WatchUpApp::WatchUpApp(QWidget *parent) : QMainWindow(parent),
                                           ui(new Ui::WatchUpApp),
                                           roomWidget(nullptr) {
     ui->setupUi(this);
-    ui->youtubeButton->setIcon(QPixmap(QString::fromUtf8(":resources/icons/youtube_icon.png")));
     manager = new MainWidgetManager();
 
     connect(ui->logoutButton, SIGNAL(clicked()), this, SIGNAL(logout()));

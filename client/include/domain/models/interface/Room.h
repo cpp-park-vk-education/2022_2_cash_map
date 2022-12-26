@@ -20,6 +20,10 @@ public:
 
     virtual void setPlayingState(bool state) = 0;
 
+    virtual QString getService() = 0;
+
+    virtual void setService(const QString &) = 0;
+
     virtual void setSource(const QString &source) = 0;
 
     virtual void removeMember(RoomMember *member) = 0;

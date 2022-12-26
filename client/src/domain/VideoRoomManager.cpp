@@ -1,4 +1,5 @@
 #include "include/domain/VideoRoomManager.h"
+#include "include/UI/RutubeWatcher.h"
 #include "include/domain/models/VideoRoomMember.h"
 
 #include <QApplication>
@@ -24,6 +25,8 @@ VideoRoomManager::VideoRoomManager(Room *room, IVideoWatcher *watcher) : startSt
 
     connect(networkManager, SIGNAL(pongSignal(const QVariantMap &)), this, SLOT(acceptPong(const QVariantMap &)));
 
+    connect(networkManager, SIGNAL(serviceChangedSignal(const QVariantMap &)), this, SLOT(changeWatcher(const QVariantMap &)));
+
     connect(&timer, SIGNAL(timeout()), this, SLOT(updatePlayerState()));
     timer.start(3000);
 
@@ -34,8 +37,35 @@ VideoRoomManager::VideoRoomManager(Room *room, IVideoWatcher *watcher) : startSt
     }
 }
 
+void VideoRoomManager::changeWatcher(IVideoWatcher *newWatcher, const QString &wactherType) {
+    delete watcher;
+    watcher = newWatcher;
+
+    networkManager->sendServiceChangedRequest(wactherType);
+    room->setService(wactherType);
+
+    startState = watcher->getState();
+}
+
+void VideoRoomManager::changeWatcher(const QVariantMap &request) {
+    if (request["code"].toString() == "") {
+        delete watcher;
+        QString service = request["service"].toString();
+        QWebEngineView *view = new CustomWebView();
+        if (service == "rutube") {
+            watcher = new RutubeWatcher(view);
+        } else {
+            watcher = new YoutubeWatcher(view);
+        }
+
+        startState = watcher->getState();
+        room->setService(service);
+        emit changeWebViewWidget(view, service);
+    }
+}
+
 void VideoRoomManager::checkRoomState() {
-    // delay
+
     qDebug() << "old state: " << startState.playing;
     PlayerState state = watcher->getState();
 
@@ -115,13 +145,15 @@ void VideoRoomManager::stopWatching(const QVariantMap &response) {
 
 void VideoRoomManager::changeVideoContent(const QVariantMap &response) {
     // требуется проверка валидности урла
-    QString src = response["src"].toString();
-    QString id = watcher->getVideoIdByRawLink(src);
-    QString link = watcher->getLinkByVideoId(id);
-    watcher->setContentPath(link);
+    if (response["code"].toString() != "200") {
+        QString src = response["src"].toString();
+        QString id = watcher->getVideoIdByRawLink(src);
+        QString link = watcher->getLinkByVideoId(id);
+        watcher->setContentPath(link);
 
-    startState.playing = false;
-    startState.timestamp = 0;
+        startState.playing = false;
+        startState.timestamp = 0;
+    }
 }
 
 void VideoRoomManager::changeVideoContent(const QString &url) {
@@ -248,4 +280,5 @@ QString VideoRoomManager::convertTimeStampToString(int timeStamp) {
 
 VideoRoomManager::~VideoRoomManager() {
     delete room;
+    delete watcher;
 }

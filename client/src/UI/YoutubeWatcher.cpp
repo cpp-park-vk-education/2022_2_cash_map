@@ -34,6 +34,7 @@ YoutubeWatcher::YoutubeWatcher(QWebEngineView *_view) : urlWasSetted(false), vie
 void YoutubeWatcher::togglePlay() {
     if (!urlWasSetted)
         throw std::runtime_error("Can't operate with Youtube Watcher before setting url of video");
+    qDebug() << "PLAY";
     QString js = "document.getElementsByClassName('ytp-large-play-button')[0].click();";
     view->page()->runJavaScript(js, [](const QVariant &v){ qDebug() << v.toString(); });
 }
@@ -131,3 +132,7 @@ QString YoutubeWatcher::getVideoIdByRawLink(const QUrl& url) {
     return query.queryItemValue("v");
 }
 
+
+YoutubeWatcher::~YoutubeWatcher() {
+    delete view;
+}
