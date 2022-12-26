@@ -199,20 +199,14 @@ void VideoRoomManager::acceptPong(const QVariantMap &request) {
     QString userId;
     QString time;
     QList<RoomMember *> members = getMembersList();
-    for (auto viewerInfo : request["viewers"].toList()) {
-        userId = request["id"].toString();
-        time = request["time"].toString();
-
-        for (auto member : members) {
-            if (member->getUserId() == userId) {
-                member->setTimeStamp(time);
-                break;
-            }
+    userId = request["viewer"].toString();
+    time = request["time"].toString();
+    for (auto member : members) {
+        if (member->getUserId() == userId) {
+            member->setTimeStamp(time);
+            break;
         }
     }
-
-
-
 
     emit updateMemebersSyncStatus();
 }

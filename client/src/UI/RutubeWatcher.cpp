@@ -17,7 +17,7 @@ RutubeWatcher::RutubeWatcher(QWebEngineView *_view) : view(_view), urlWasSetted(
     view->settings()->setAttribute(QWebEngineSettings::LocalContentCanAccessRemoteUrls, true);
     view->settings()->setAttribute(QWebEngineSettings::LocalContentCanAccessFileUrls, true);
 
-    QWebEnginePage *webPage = new QWebEnginePage();
+    webPage = new QWebEnginePage();
     view->setPage(webPage);
 
     QObject::connect(view, &QWebEngineView::loadProgress, this, &RutubeWatcher::handleLoading);
@@ -26,11 +26,9 @@ RutubeWatcher::RutubeWatcher(QWebEngineView *_view) : view(_view), urlWasSetted(
 RutubeWatcher::RutubeWatcher(IVideoWatcher &&watcher) {
     this->view = watcher.getView();
     watcher.setView(nullptr);
-
+    this->webPage = watcher.getWebPage();
+    watcher.setWebPage(nullptr);
     urlWasSetted = false;
-
-    QWebEnginePage *webPage = new QWebEnginePage();
-    view->setPage(webPage);
 
     QObject::connect(view, &QWebEngineView::loadProgress, this, &RutubeWatcher::handleLoading);
 }
@@ -161,6 +159,15 @@ void RutubeWatcher::setView(QWebEngineView *view) {
     this->view = view;
 }
 
+QWebEnginePage *RutubeWatcher::getWebPage() {
+    return webPage;
+}
+
+void RutubeWatcher::setWebPage(QWebEnginePage *view) {
+    webPage = view;
+}
+
 RutubeWatcher::~RutubeWatcher() {
     delete view;
+    QWebEnginePage *webPage;
 }

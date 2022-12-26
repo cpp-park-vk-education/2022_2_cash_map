@@ -25,7 +25,7 @@ YoutubeWatcher::YoutubeWatcher(QWebEngineView *_view) : urlWasSetted(false), vie
     view->settings()->setAttribute(QWebEngineSettings::PlaybackRequiresUserGesture, false);
     view->settings()->setAttribute(QWebEngineSettings::HyperlinkAuditingEnabled, false);
 
-    QWebEnginePage *webPage = new QWebEnginePage();
+    webPage = new QWebEnginePage();
     view->setPage(webPage);
 
     QObject::connect(view, &QWebEngineView::loadProgress, this, &YoutubeWatcher::handleLoading);
@@ -34,10 +34,21 @@ YoutubeWatcher::YoutubeWatcher(QWebEngineView *_view) : urlWasSetted(false), vie
 YoutubeWatcher::YoutubeWatcher(IVideoWatcher &&watcher) {
     this->view = watcher.getView();
     watcher.setView(nullptr);
-    urlWasSetted = false;
+    this->webPage = watcher.getWebPage();
+    watcher.setWebPage(nullptr);
+    view->settings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
+    view->settings()->setAttribute(QWebEngineSettings::FullScreenSupportEnabled, true);
+    view->settings()->setAttribute(QWebEngineSettings::AllowRunningInsecureContent, true);
+    view->settings()->setAttribute(QWebEngineSettings::SpatialNavigationEnabled, true);
+    view->settings()->setAttribute(QWebEngineSettings::JavascriptEnabled, true);
+    view->settings()->setAttribute(QWebEngineSettings::JavascriptCanOpenWindows, true);
+    view->settings()->setAttribute(QWebEngineSettings::AllowWindowActivationFromJavaScript, true);
+    view->settings()->setAttribute(QWebEngineSettings::PlaybackRequiresUserGesture, false);
+    view->settings()->setAttribute(QWebEngineSettings::HyperlinkAuditingEnabled, false);
 
-    QWebEnginePage *webPage = new QWebEnginePage();
-    view->setPage(webPage);
+
+
+    urlWasSetted = false;
 
     QObject::connect(view, &QWebEngineView::loadProgress, this, &YoutubeWatcher::handleLoading);
 }
@@ -151,7 +162,16 @@ void YoutubeWatcher::setView(QWebEngineView *view) {
     this->view = view;
 }
 
+QWebEnginePage *YoutubeWatcher::getWebPage() {
+    return webPage;
+}
+
+void YoutubeWatcher::setWebPage(QWebEnginePage *view) {
+    webPage = view;
+}
+
 
 YoutubeWatcher::~YoutubeWatcher() {
     delete view;
+    delete webPage;
 }

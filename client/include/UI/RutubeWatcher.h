@@ -32,9 +32,13 @@ public:
     QWebEngineView *getView() override;
     void setView(QWebEngineView *view) override;
 
+    QWebEnginePage *getWebPage() override;
+
+    void setWebPage(QWebEnginePage *view) override;
 private:
     QWebEngineView *view = nullptr;
     bool urlWasSetted = false;
+    QWebEnginePage *webPage;
 };
 
 #endif // RUTUBEWATCHER_H

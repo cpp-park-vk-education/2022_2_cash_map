@@ -56,6 +56,9 @@ class IVideoWatcher : public QObject {
 
     virtual void setView(QWebEngineView *) = 0;
 
+    virtual QWebEnginePage *getWebPage() = 0;
+    virtual void setWebPage(QWebEnginePage *view) = 0 ;
+
 signals:
     void ReadyToWatch(bool ok);
 };
@@ -106,9 +109,12 @@ public:
     virtual QWebEngineView *getView() override;
     virtual void setView(QWebEngineView *view) override;
 
+    virtual QWebEnginePage *getWebPage() override;
+    virtual void setWebPage(QWebEnginePage *view) override;
 private:
     bool urlWasSetted = false;
     QWebEngineView *view;
+    QWebEnginePage *webPage;
 };
 
 

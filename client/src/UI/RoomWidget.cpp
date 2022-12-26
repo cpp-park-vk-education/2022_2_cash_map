@@ -105,11 +105,14 @@ void RoomWidget::updateMembersList() {
         }
     }
 
+    qDebug() << "PERFECT: " << perfectTiming;
+
     for (auto member : members) {
         QListWidgetItem *item = new QListWidgetItem();
         item->setText(member->getUsername());
         int timing = manager->convertTimeStampToInt(member->getCurrentTimeStamp());
-        if (perfectTiming - timing > 5) {
+        qDebug() << "TIMEING: " << timing;
+        if (perfectTiming - timing > 2) {
             item->setIcon(QPixmap(":resources/icons/red point.png"));
         } else {
             item->setIcon(QPixmap(":resources/icons/green point.png"));
