@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/resources">
+        <file>icons/youtube_icon.png</file>
+        <file>icons/loading.gif</file>
+        <file>icons/green point.png</file>
+        <file>icons/rutube_icon.png</file>
+        <file>icons/logo.png</file>
+        <file>icons/logo_2.svg</file>
+        <file>icons/red point.png</file>
+    </qresource>
+</RCC>
